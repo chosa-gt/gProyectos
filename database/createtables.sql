@@ -17,7 +17,7 @@ CREATE TABLE usuarios (
     correo VARCHAR(100) UNIQUE NOT NULL,
     contrasena VARCHAR(255) NOT NULL,
     id_rol INT NOT NULL,
-    activo BOOLEAN,
+    activo BOOLEAN DEFAULT TRUE,
 
     CONSTRAINT pk_usuarios PRIMARY KEY (id_usuario),
     CONSTRAINT fk_rol FOREIGN KEY (id_rol) REFERENCES rol(id_rol)
@@ -87,7 +87,7 @@ CREATE TABLE estado_tarea (
 
 CREATE TABLE tareas (
     id_tarea INTEGER GENERATED ALWAYS AS IDENTITY NOT NULL,
-    tarea VARCHAR(50),
+    nombre VARCHAR(50),
     descripcion TEXT,
     fecha_inicio DATE NOT NULL,
     fecha_fin DATE,
