@@ -1,0 +1,59 @@
+# ========================
+# DEPENDENCIAS
+# ========================
+node_modules/
+.pnp
+.pnp.js
+
+# ========================
+# VARIABLES DE ENTORNO
+# ========================
+.env
+.env.local
+.env.development
+.env.production
+.env.*.local
+
+# ========================
+# BUILD / DIST
+# ========================
+dist/
+build/
+out/
+
+# ========================
+# TYPESCRIPT
+# ========================
+*.tsbuildinfo
+
+# ========================
+# PRISMA
+# ========================
+prisma/migrations/dev.db
+prisma/*.db
+
+# ========================
+# LOGS
+# ========================
+logs/
+*.log
+npm-debug.log*
+
+# ========================
+# SISTEMA OPERATIVO
+# ========================
+.DS_Store
+Thumbs.db
+
+# ========================
+# EDITORES / IDEs
+# ========================
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+
+# ========================
+# VITE
+# ========================
+*.local
