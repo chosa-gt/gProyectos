@@ -30,6 +30,7 @@ model Usuario {
   id_rol     Int
   activo     Boolean  @default(true)
   tareas     Tarea[]
+  refresh_tokens RefreshToken[]
 
   rol        Rol      @relation(fields: [id_rol], references: [id_rol])
 
@@ -124,4 +125,16 @@ model Tarea {
   estado_tarea    EstadoTarea @relation(fields: [id_estado_tarea], references: [id_estado_tarea])
 
   @@map("tareas")
+}
+
+model RefreshToken {
+  id         Int      @id @default(autoincrement())
+  token      String   @unique
+  id_usuario Int
+  expires_at DateTime
+  created_at DateTime @default(now())
+
+  usuario    Usuario  @relation(fields: [id_usuario], references: [id_usuario])
+
+  @@map("refresh_tokens")
 }
