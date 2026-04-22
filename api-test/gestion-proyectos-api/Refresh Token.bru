@@ -1,0 +1,17 @@
+meta {
+  name: Refresh Token
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:3000/api/auth/refresh
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoxLCJpYXQiOjE3NzY4ODA4MTcsImV4cCI6MTc3NzQ4NTYxN30.0K5_IYfKO-_8PHt7bWzq_fG6RTRP_HbuMnkJ-MYUM-c"
+  }
+}
