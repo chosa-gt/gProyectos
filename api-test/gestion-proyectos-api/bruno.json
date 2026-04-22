@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "gestion-proyectos-api",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

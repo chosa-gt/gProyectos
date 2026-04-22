@@ -1,0 +1,21 @@
+meta {
+  name: Register
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:3000/api/auth/register
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "nombre": "Daniel",
+    "apellido": "Admin",
+    "correo": "admin@test.com",
+    "contrasena": "Admin123!",
+    "id_rol": 1
+  }
+}
