@@ -1,0 +1,30 @@
+meta {
+  name: POST api-proyectos
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:3000/api/proyectos
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoxLCJpZF9yb2wiOjEsImlhdCI6MTc3Njk4MTQ0NiwiZXhwIjoxNzc2OTgyMzQ2fQ.rIsecXsxUEguMCAn8wQ_4GKm0Jqu2pSiQ-wq1khxGoI
+}
+
+body:json {
+  {
+    "nombre": "Sistema Web Empresarial",
+    "descripcion": "Desarrollo de sistema de gestión interna",
+    "fecha_inicio": "2026-04-23",
+    "id_cliente": 1,
+    "id_estado_proyecto": 1
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

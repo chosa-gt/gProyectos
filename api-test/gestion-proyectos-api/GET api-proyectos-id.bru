@@ -1,0 +1,19 @@
+meta {
+  name: GET api-proyectos-id
+  type: http
+  seq: 0
+}
+
+get {
+  url: http://localhost:3000/api/proyectos/4
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoxLCJpZF9yb2wiOjEsImlhdCI6MTc3Njk4MjU5MiwiZXhwIjoxNzc2OTgzNDkyfQ.4sThk4gLTlbZr73SkM6DTs2aeijXAVRiP4WBd7D1VE8
+}
+
+settings {
+  encodeUrl: true
+}

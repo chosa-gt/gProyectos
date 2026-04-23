@@ -9,7 +9,7 @@ const prisma = new PrismaClient({ adapter });
 
 async function main() {
   // Limpiar tablas antes de insertar
-await prisma.$executeRaw`TRUNCATE TABLE estado_cliente, estado_proyecto, estado_tarea, prioridad, empresa, rol RESTART IDENTITY CASCADE`;
+  await prisma.$executeRaw`TRUNCATE TABLE estado_cliente, estado_proyecto, estado_tarea, prioridad, empresa RESTART IDENTITY CASCADE`;
   // Roles
   await prisma.rol.createMany({
     data: [{ nombre: "Administrador" }, { nombre: "Usuario" }],
@@ -63,6 +63,19 @@ await prisma.$executeRaw`TRUNCATE TABLE estado_cliente, estado_proyecto, estado_
       { nombre: "DataCorp" },
     ],
     skipDuplicates: true,
+  });
+
+  // Cliente de prueba
+  await prisma.cliente.upsert({
+    where: { correo: "carlos@techsolutions.com" },
+    update: {},
+    create: {
+      nombre: "Carlos Pérez",
+      correo: "carlos@techsolutions.com",
+      telefono: "50212345678",
+      id_empresa: 1,
+      id_estado_cliente: 1,
+    },
   });
 
   console.log("Seed completado ✅");

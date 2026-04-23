@@ -1,0 +1,27 @@
+meta {
+  name: PUT api-proyectos-id
+  type: http
+  seq: 0
+}
+
+put {
+  url: http://localhost:3000/api/proyectos/4
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoxLCJpZF9yb2wiOjEsImlhdCI6MTc3Njk4MjU5MiwiZXhwIjoxNzc2OTgzNDkyfQ.4sThk4gLTlbZr73SkM6DTs2aeijXAVRiP4WBd7D1VE8
+}
+
+body:json {
+  {
+    "nombre": "Sistema Web Empresarial v2",
+    "fecha_fin": "2026-12-31",
+    "id_estado_proyecto": 2
+  }
+}
+
+settings {
+  encodeUrl: true
+}
