@@ -1,0 +1,25 @@
+meta {
+  name: POST /api/clientes
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:3000/api/clientes
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoxLCJpZF9yb2wiOjEsImlhdCI6MTc3Njk1MTg0MiwiZXhwIjoxNzc2OTUyNzQyfQ.b_63MXQWEtxzd7MpSJXspsyJqTFMLiZLulxNDOVj3Nc
+}
+
+body:json {
+  {
+    "nombre": "María López",
+    "correo": "maria@empresa.com",
+    "telefono": "50298765432",
+    "id_empresa": 2,
+    "id_estado_cliente": 1
+  }
+}

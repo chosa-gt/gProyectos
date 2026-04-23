@@ -1,0 +1,20 @@
+meta {
+  name: GET api clientes
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:3000/api/clientes
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoxLCJpZF9yb2wiOjEsImlhdCI6MTc3Njk1MzAzOSwiZXhwIjoxNzc2OTUzOTM5fQ.WVJweMiWoUQ3RHDmoO8HRjc_Z_guiwAodA2DXZhA-4k
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

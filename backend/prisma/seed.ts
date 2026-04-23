@@ -8,6 +8,8 @@ const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
+  // Limpiar tablas antes de insertar
+await prisma.$executeRaw`TRUNCATE TABLE estado_cliente, estado_proyecto, estado_tarea, prioridad, empresa, rol RESTART IDENTITY CASCADE`;
   // Roles
   await prisma.rol.createMany({
     data: [{ nombre: "Administrador" }, { nombre: "Usuario" }],
@@ -49,6 +51,16 @@ async function main() {
       { nombre_prioridad: "Media" },
       { nombre_prioridad: "Alta" },
       { nombre_prioridad: "Crítica" },
+    ],
+    skipDuplicates: true,
+  });
+
+    // Empresas
+  await prisma.empresa.createMany({
+    data: [
+      { nombre: "TechSolutions S.A." },
+      { nombre: "Innovatech" },
+      { nombre: "DataCorp" },
     ],
     skipDuplicates: true,
   });
