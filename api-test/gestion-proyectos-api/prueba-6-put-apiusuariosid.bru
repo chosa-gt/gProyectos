@@ -1,0 +1,21 @@
+meta {
+  name: Prueba 6 — PUT /api/usuarios/:id
+  type: http
+  seq: 1
+}
+
+put {
+  url: http://localhost:3000/api/usuarios/2
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoxLCJpZF9yb2wiOjEsImlhdCI6MTc3NjkxODc5MywiZXhwIjoxNzc2OTE5NjkzfQ.95ShWBj-UB98lFv0gTR2WeMAfIGIbD_3fFIg0zvzpQk
+}
+
+body:json {
+  {
+    "nombre": "Juan Carlos"
+  }
+}

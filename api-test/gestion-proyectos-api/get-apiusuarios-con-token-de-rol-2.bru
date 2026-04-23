@@ -1,0 +1,15 @@
+meta {
+  name: GET /api/usuarios con token de rol 2
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:3000/api/usuarios
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoyLCJpZF9yb2wiOjIsImlhdCI6MTc3NjkxNzgyNSwiZXhwIjoxNzc2OTE4NzI1fQ.eruvDnzfAJk85_olXPlSqzc6zepGnkfwie_Kn-1-fBI
+}

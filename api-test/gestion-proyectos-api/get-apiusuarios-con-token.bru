@@ -1,0 +1,15 @@
+meta {
+  name: GET /api/usuarios CON token
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:3000/api/usuarios
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoxLCJpZF9yb2wiOjEsImlhdCI6MTc3NjkxNjkxOCwiZXhwIjoxNzc2OTE3ODE4fQ.lwlxK9LDOcLWpNFiW1f5Uck_N-eTRP4hXMZz5cF-fe0
+}
