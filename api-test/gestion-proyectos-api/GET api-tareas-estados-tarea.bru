@@ -1,0 +1,19 @@
+meta {
+  name: GET api-tareas-estados-tarea
+  type: http
+  seq: 0
+}
+
+get {
+  url: http://localhost:3000/api/tareas/estados-tarea
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoxLCJpZF9yb2wiOjEsImlhdCI6MTc3NzAwMjY1MSwiZXhwIjoxNzc3MDAzNTUxfQ.4jVriN2SolM0XAfmUcWmqVgnMMrB8dN0Gf0Ad43JQ9M
+}
+
+settings {
+  encodeUrl: true
+}

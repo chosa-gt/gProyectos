@@ -3,6 +3,7 @@ import authRoutes from "./auth.routes.js";
 import usuarioRoutes from "./usuario.routes.js";
 import clienteRoutes from "./cliente.routes.js";
 import proyectoRoutes from "./proyecto.routes.js";
+import tareaRoutes    from "./tarea.routes.js";
 
 export const router = Router();
 
@@ -10,3 +11,4 @@ router.use("/auth",     authRoutes);
 router.use("/usuarios", usuarioRoutes);
 router.use("/clientes", clienteRoutes);
 router.use("/proyectos", proyectoRoutes);
+router.use("/tareas",    tareaRoutes);

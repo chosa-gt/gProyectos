@@ -1,11 +1,11 @@
 meta {
-  name: POST api-proyectos
+  name: POST api-tareas
   type: http
   seq: 1
 }
 
 post {
-  url: http://localhost:3000/api/proyectos
+  url: http://localhost:3000/api/tareas
   body: json
   auth: inherit
 }
@@ -16,11 +16,14 @@ headers {
 
 body:json {
   {
-    "nombre": "Sistema Web Empresarial",
-    "descripcion": "Desarrollo de sistema de gestión interna",
+    "tarea": "Configurar base de datos",
+    "descripcion": "Crear esquema PostgreSQL y migraciones",
     "fecha_inicio": "2026-04-23",
-    "id_cliente": 1,
-    "id_estado_proyecto": 1
+    "fecha_fin": "2026-04-25",
+    "id_proyecto": 5,
+    "id_usuario": 1,
+    "id_prioridad": 3,
+    "id_estado_tarea": 1
   }
 }
 

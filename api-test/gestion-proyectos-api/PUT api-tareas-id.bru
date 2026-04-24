@@ -1,0 +1,26 @@
+meta {
+  name: PUT api-tareas-id
+  type: http
+  seq: 0
+}
+
+put {
+  url: http://localhost:3000/api/tareas/2
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoxLCJpZF9yb2wiOjEsImlhdCI6MTc3NzAwNDg3OSwiZXhwIjoxNzc3MDA1Nzc5fQ.NTTQ5sdzgPfoCgszhg-6riEz1NWOhoV7A-CYPYB0kAw
+}
+
+body:json {
+  {
+    "id_estado_tarea": 2,
+    "fecha_fin": "2026-04-26"
+  }
+}
+
+settings {
+  encodeUrl: true
+}
