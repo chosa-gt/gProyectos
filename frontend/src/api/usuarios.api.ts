@@ -26,3 +26,7 @@ export const updateUsuarioApi = async (
 export const desactivarUsuarioApi = async (id: number): Promise<void> => {
   await api.delete(`/usuarios/${id}`);
 };
+
+export const activarUsuarioApi = async (id: number): Promise<void> => {
+  await api.patch(`/usuarios/${id}/activar`);
+};

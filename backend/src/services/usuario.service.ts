@@ -66,3 +66,15 @@ export const desactivar = async (id: number) => {
 
   return usuario;
 };
+
+export const activar = async (id: number) => {
+  const existe = await prisma.usuario.findUnique({ where: { id_usuario: id } });
+  if (!existe) throw new NotFoundError("Usuario no encontrado");
+
+  const { contrasena: _, ...usuario } = await prisma.usuario.update({
+    where: { id_usuario: id },
+    data: { activo: true },
+  });
+
+  return usuario;
+};

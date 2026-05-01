@@ -20,7 +20,7 @@ import {
 } from "../../components/ui/select";
 import type { Usuario } from "../../types";
 import {
-  getUsuariosApi, createUsuarioApi, updateUsuarioApi, desactivarUsuarioApi,
+  getUsuariosApi, createUsuarioApi, updateUsuarioApi, desactivarUsuarioApi, activarUsuarioApi,
 } from "../../api/usuarios.api";
 import { useAuthStore } from "../../store/auth.store";
 
@@ -43,6 +43,7 @@ export const UsuariosPage = () => {
 
   const [confirmOpen, setConfirmOpen]   = useState(false);
   const [toDesactivar, setToDesactivar] = useState<Usuario | null>(null);
+  const [confirmAction, setConfirmAction] = useState<"activar" | "desactivar">("desactivar");
   const [deactivating, setDeactivating] = useState(false);
 
   const load = async () => {
@@ -76,8 +77,9 @@ export const UsuariosPage = () => {
     setModalOpen(true);
   };
 
-  const openConfirm = (u: Usuario) => {
+  const openConfirm = (u: Usuario, action: "activar" | "desactivar") => {
     setToDesactivar(u);
+    setConfirmAction(action);
     setConfirmOpen(true);
   };
 
@@ -122,16 +124,21 @@ export const UsuariosPage = () => {
     }
   };
 
-  const handleDesactivar = async () => {
+  const handleConfirmAction = async () => {
     if (!toDesactivar) return;
     try {
       setDeactivating(true);
-      await desactivarUsuarioApi(toDesactivar.id_usuario);
-      toast.success(`${toDesactivar.nombre} desactivado`);
+      if (confirmAction === "desactivar") {
+        await desactivarUsuarioApi(toDesactivar.id_usuario);
+        toast.success(`${toDesactivar.nombre} desactivado`);
+      } else {
+        await activarUsuarioApi(toDesactivar.id_usuario);
+        toast.success(`${toDesactivar.nombre} activado`);
+      }
       setConfirmOpen(false);
       load();
     } catch {
-      toast.error("No se pudo desactivar el usuario");
+      toast.error(`No se pudo ${confirmAction} el usuario`);
     } finally {
       setDeactivating(false);
     }
@@ -193,13 +200,22 @@ export const UsuariosPage = () => {
                           <DropdownMenuItem onClick={() => openEdit(u)}>
                             Editar
                           </DropdownMenuItem>
-                          {u.activo && u.id_usuario !== me?.id_usuario && (
-                            <DropdownMenuItem
-                              variant="destructive"
-                              onClick={() => openConfirm(u)}
-                            >
-                              Desactivar
-                            </DropdownMenuItem>
+                          {u.id_usuario !== me?.id_usuario && (
+                            u.activo ? (
+                              <DropdownMenuItem
+                                variant="destructive"
+                                onClick={() => openConfirm(u, "desactivar")}
+                              >
+                                Desactivar
+                              </DropdownMenuItem>
+                            ) : (
+                              <DropdownMenuItem
+                                className="text-emerald-600 focus:text-emerald-700"
+                                onClick={() => openConfirm(u, "activar")}
+                              >
+                                Activar
+                              </DropdownMenuItem>
+                            )
                           )}
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -247,7 +263,9 @@ export const UsuariosPage = () => {
                 onValueChange={(v) => setForm((f) => ({ ...f, id_rol: v ?? "2" }))}
               >
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue>
+                    {form.id_rol === "1" ? "Administrador" : "Usuario"}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="1">Administrador</SelectItem>
@@ -267,25 +285,36 @@ export const UsuariosPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Diálogo confirmar desactivar */}
+      {/* Diálogo confirmar activar / desactivar */}
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle>Desactivar usuario</DialogTitle>
+            <DialogTitle>
+              {confirmAction === "desactivar" ? "Desactivar usuario" : "Activar usuario"}
+            </DialogTitle>
           </DialogHeader>
           <p className="text-sm text-gray-600">
-            ¿Desactivar a{" "}
+            {confirmAction === "desactivar" ? "¿Desactivar a" : "¿Activar a"}{" "}
             <span className="font-medium">
               {toDesactivar?.nombre} {toDesactivar?.apellido}
             </span>
-            ? El usuario no podrá iniciar sesión. Esto es reversible.
+            {"? "}
+            {confirmAction === "desactivar"
+              ? "El usuario no podrá iniciar sesión. Esto es reversible."
+              : "El usuario podrá volver a iniciar sesión."}
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setConfirmOpen(false)}>
               Cancelar
             </Button>
-            <Button variant="destructive" onClick={handleDesactivar} disabled={deactivating}>
-              {deactivating ? "Desactivando..." : "Desactivar"}
+            <Button
+              variant={confirmAction === "desactivar" ? "destructive" : "default"}
+              onClick={handleConfirmAction}
+              disabled={deactivating}
+            >
+              {deactivating
+                ? confirmAction === "desactivar" ? "Desactivando..." : "Activando..."
+                : confirmAction === "desactivar" ? "Desactivar" : "Activar"}
             </Button>
           </DialogFooter>
         </DialogContent>
