@@ -78,7 +78,7 @@ model EstadoProyecto {
 
 model Proyecto {
   id_proyecto        Int            @id @default(autoincrement())
-  nombre             String?        @db.VarChar(50)
+  nombre             String?        @db.VarChar(255)
   descripcion        String?
   fecha_inicio       DateTime       @db.Date
   fecha_fin          DateTime?      @db.Date
@@ -110,7 +110,7 @@ model EstadoTarea {
 
 model Tarea {
   id_tarea        Int       @id @default(autoincrement())
-  tarea           String?   @db.VarChar(50)
+  tarea           String?   @db.VarChar(255)
   descripcion     String?
   fecha_inicio    DateTime  @db.Date
   fecha_fin       DateTime? @db.Date

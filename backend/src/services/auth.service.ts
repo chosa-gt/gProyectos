@@ -13,15 +13,15 @@ export const register = async (
   apellido: string,
   correo: string,
   contrasena: string,
-  id_rol: number
 ) => {
   const existe = await prisma.usuario.findUnique({ where: { correo } });
   if (existe) throw new BadRequestError("El correo ya está registrado");
 
   const hash = await argon2.hash(contrasena);
 
+  // El auto-registro público siempre crea un usuario regular (rol 2)
   const { contrasena: _, ...usuario } = await prisma.usuario.create({
-    data: { nombre, apellido, correo, contrasena: hash, id_rol, activo: true },
+    data: { nombre, apellido, correo, contrasena: hash, id_rol: 2, activo: true },
   });
 
   return usuario;

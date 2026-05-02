@@ -3,9 +3,14 @@ import * as tareaService from "../services/tarea.service.js";
 
 export const getAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id_proyecto = req.query.id_proyecto ? Number(req.query.id_proyecto) : undefined;
-    const tareas = await tareaService.getAll(id_proyecto);
-    res.status(200).json({ status: "ok", data: tareas });
+    const { page = 1, limit = 10, search, id_proyecto, id_prioridad, id_estado_tarea } = req.query;
+    const result = await tareaService.getAll(Number(page), Number(limit), {
+      search:          search          as string | undefined,
+      id_proyecto:     id_proyecto     ? Number(id_proyecto)     : undefined,
+      id_prioridad:    id_prioridad    ? Number(id_prioridad)    : undefined,
+      id_estado_tarea: id_estado_tarea ? Number(id_estado_tarea) : undefined,
+    });
+    res.status(200).json({ status: "ok", ...result });
   } catch (err) {
     next(err);
   }

@@ -1,18 +1,47 @@
 import argon2 from "argon2";
 import prisma from "../prisma/client.js";
 import { NotFoundError, BadRequestError } from "../errors/AppError.js";
+import { buildMeta } from "../lib/paginate.js";
 
-export const getAll = async () => {
-  return await prisma.usuario.findMany({
-    select: {
-      id_usuario: true,
-      nombre: true,
-      apellido: true,
-      correo: true,
-      activo: true,
-      rol: { select: { nombre: true } },
-    },
+export const create = async (data: {
+  nombre: string;
+  apellido: string;
+  correo: string;
+  contrasena: string;
+  id_rol: number;
+}) => {
+  const existe = await prisma.usuario.findUnique({ where: { correo: data.correo } });
+  if (existe) throw new BadRequestError("El correo ya está registrado");
+
+  const hash = await argon2.hash(data.contrasena);
+
+  const { contrasena: _, ...usuario } = await prisma.usuario.create({
+    data: { ...data, contrasena: hash, activo: true },
   });
+
+  return usuario;
+};
+
+export const getAll = async (page: number, limit: number, search?: string) => {
+  const where = search ? {
+    OR: [
+      { nombre:   { contains: search, mode: "insensitive" as const } },
+      { apellido: { contains: search, mode: "insensitive" as const } },
+      { correo:   { contains: search, mode: "insensitive" as const } },
+    ],
+  } : undefined;
+
+  const select = {
+    id_usuario: true, nombre: true, apellido: true,
+    correo: true, activo: true, rol: { select: { nombre: true } },
+  };
+
+  const [data, total] = await Promise.all([
+    prisma.usuario.findMany({ where, select, skip: (page - 1) * limit, take: limit }),
+    prisma.usuario.count({ where }),
+  ]);
+
+  return { data, meta: buildMeta(total, page, limit) };
 };
 
 export const getById = async (id: number) => {

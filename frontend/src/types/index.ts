@@ -77,6 +77,13 @@ export interface Tarea {
   proyecto: { nombre: string };
 }
 
+export interface PaginationMeta {
+  total:      number;
+  page:       number;
+  limit:      number;
+  totalPages: number;
+}
+
 export interface AuthResponse {
   accessToken: string;
   refreshToken: string;

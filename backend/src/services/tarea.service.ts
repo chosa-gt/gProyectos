@@ -1,16 +1,31 @@
 import prisma from "../prisma/client.js";
 import { NotFoundError } from "../errors/AppError.js";
+import { buildMeta } from "../lib/paginate.js";
 
-export const getAll = async (id_proyecto?: number) => {
-  return await prisma.tarea.findMany({
-    where: id_proyecto ? { id_proyecto } : undefined,
-    include: {
-      usuario: { select: { nombre: true, apellido: true } },
-      prioridad: { select: { nombre_prioridad: true } },
-      estado_tarea: { select: { estado: true } },
-      proyecto: { select: { nombre: true } },
-    },
-  });
+export const getAll = async (
+  page: number, limit: number,
+  filters: { search?: string; id_proyecto?: number; id_prioridad?: number; id_estado_tarea?: number }
+) => {
+  const where = {
+    ...(filters.id_proyecto     ? { id_proyecto: filters.id_proyecto }         : {}),
+    ...(filters.id_prioridad    ? { id_prioridad: filters.id_prioridad }       : {}),
+    ...(filters.id_estado_tarea ? { id_estado_tarea: filters.id_estado_tarea } : {}),
+    ...(filters.search          ? { tarea: { contains: filters.search, mode: "insensitive" as const } } : {}),
+  };
+
+  const include = {
+    usuario:      { select: { nombre: true, apellido: true } },
+    prioridad:    { select: { nombre_prioridad: true } },
+    estado_tarea: { select: { estado: true } },
+    proyecto:     { select: { nombre: true } },
+  };
+
+  const [data, total] = await Promise.all([
+    prisma.tarea.findMany({ where, include, skip: (page - 1) * limit, take: limit }),
+    prisma.tarea.count({ where }),
+  ]);
+
+  return { data, meta: buildMeta(total, page, limit) };
 };
 
 export const getById = async (id: number) => {

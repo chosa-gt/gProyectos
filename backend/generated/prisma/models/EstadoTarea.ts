@@ -9,8 +9,8 @@
  * 🟢 You can import this file directly.
  */
 import type * as runtime from "@prisma/client/runtime/client"
-import type * as $Enums from "../enums"
-import type * as Prisma from "../internal/prismaNamespace"
+import type * as $Enums from "../enums.js"
+import type * as Prisma from "../internal/prismaNamespace.js"
 
 /**
  * Model EstadoTarea
@@ -171,7 +171,7 @@ export type EstadoTareaGroupByOutputType = {
   _max: EstadoTareaMaxAggregateOutputType | null
 }
 
-type GetEstadoTareaGroupByPayload<T extends EstadoTareaGroupByArgs> = Prisma.PrismaPromise<
+export type GetEstadoTareaGroupByPayload<T extends EstadoTareaGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<EstadoTareaGroupByOutputType, T['by']> &
       {

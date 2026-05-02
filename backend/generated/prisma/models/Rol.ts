@@ -9,8 +9,8 @@
  * 🟢 You can import this file directly.
  */
 import type * as runtime from "@prisma/client/runtime/client"
-import type * as $Enums from "../enums"
-import type * as Prisma from "../internal/prismaNamespace"
+import type * as $Enums from "../enums.js"
+import type * as Prisma from "../internal/prismaNamespace.js"
 
 /**
  * Model Rol
@@ -171,7 +171,7 @@ export type RolGroupByOutputType = {
   _max: RolMaxAggregateOutputType | null
 }
 
-type GetRolGroupByPayload<T extends RolGroupByArgs> = Prisma.PrismaPromise<
+export type GetRolGroupByPayload<T extends RolGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<RolGroupByOutputType, T['by']> &
       {

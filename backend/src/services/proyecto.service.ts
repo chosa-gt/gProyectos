@@ -1,13 +1,28 @@
 import prisma from "../prisma/client.js";
 import { NotFoundError } from "../errors/AppError.js";
+import { buildMeta } from "../lib/paginate.js";
 
-export const getAll = async () => {
-  return await prisma.proyecto.findMany({
-    include: {
-      cliente: { select: { nombre: true } },
-      estado_proyecto: { select: { estado: true } },
-    },
-  });
+export const getAll = async (
+  page: number, limit: number,
+  filters: { search?: string; id_cliente?: number; id_estado_proyecto?: number }
+) => {
+  const where = {
+    ...(filters.id_cliente         ? { id_cliente: filters.id_cliente }                 : {}),
+    ...(filters.id_estado_proyecto ? { id_estado_proyecto: filters.id_estado_proyecto } : {}),
+    ...(filters.search             ? { nombre: { contains: filters.search, mode: "insensitive" as const } } : {}),
+  };
+
+  const include = {
+    cliente:         { select: { nombre: true } },
+    estado_proyecto: { select: { estado: true } },
+  };
+
+  const [data, total] = await Promise.all([
+    prisma.proyecto.findMany({ where, include, skip: (page - 1) * limit, take: limit }),
+    prisma.proyecto.count({ where }),
+  ]);
+
+  return { data, meta: buildMeta(total, page, limit) };
 };
 
 export const getById = async (id: number) => {

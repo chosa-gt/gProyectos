@@ -3,8 +3,13 @@ import * as proyectoService from "../services/proyecto.service.js";
 
 export const getAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const proyectos = await proyectoService.getAll();
-    res.status(200).json({ status: "ok", data: proyectos });
+    const { page = 1, limit = 10, search, id_cliente, id_estado_proyecto } = req.query;
+    const result = await proyectoService.getAll(Number(page), Number(limit), {
+      search:             search             as string | undefined,
+      id_cliente:         id_cliente         ? Number(id_cliente)         : undefined,
+      id_estado_proyecto: id_estado_proyecto ? Number(id_estado_proyecto) : undefined,
+    });
+    res.status(200).json({ status: "ok", ...result });
   } catch (err) {
     next(err);
   }

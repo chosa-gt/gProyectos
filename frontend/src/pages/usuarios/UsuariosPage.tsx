@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Plus } from "lucide-react";
+import { MoreHorizontal, Plus, Search } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
 import { Input } from "../../components/ui/input";
@@ -18,7 +18,8 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "../../components/ui/select";
-import type { Usuario } from "../../types";
+import type { Usuario, PaginationMeta } from "../../types";
+import { Pagination } from "../../components/ui/pagination";
 import {
   getUsuariosApi, createUsuarioApi, updateUsuarioApi, desactivarUsuarioApi, activarUsuarioApi,
 } from "../../api/usuarios.api";
@@ -37,6 +38,10 @@ export const UsuariosPage = () => {
   const [loading, setLoading]     = useState(true);
   const [saving, setSaving]       = useState(false);
 
+  const [busqueda, setBusqueda]   = useState("");
+  const [page, setPage]           = useState(1);
+  const [meta, setMeta]           = useState<PaginationMeta | null>(null);
+
   const [modalOpen, setModalOpen]       = useState(false);
   const [selected, setSelected]         = useState<Usuario | null>(null);
   const [form, setForm]                 = useState(emptyForm);
@@ -46,10 +51,12 @@ export const UsuariosPage = () => {
   const [confirmAction, setConfirmAction] = useState<"activar" | "desactivar">("desactivar");
   const [deactivating, setDeactivating] = useState(false);
 
-  const load = async () => {
+  const load = async (search: string, p: number) => {
     try {
       setLoading(true);
-      setUsuarios(await getUsuariosApi());
+      const res = await getUsuariosApi({ page: p, limit: 10, search: search || undefined });
+      setUsuarios(res.data);
+      setMeta(res.meta);
     } catch {
       toast.error("No se pudo cargar la lista de usuarios");
     } finally {
@@ -57,7 +64,16 @@ export const UsuariosPage = () => {
     }
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load("", 1); }, []);
+
+  // Debounce busqueda → page 1
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPage(1);
+      load(busqueda, 1);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [busqueda]);
 
   const openCreate = () => {
     setSelected(null);
@@ -116,7 +132,7 @@ export const UsuariosPage = () => {
         toast.success("Usuario creado");
       }
       setModalOpen(false);
-      load();
+      load(busqueda, page);
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Error al guardar");
     } finally {
@@ -136,7 +152,7 @@ export const UsuariosPage = () => {
         toast.success(`${toDesactivar.nombre} activado`);
       }
       setConfirmOpen(false);
-      load();
+      load(busqueda, page);
     } catch {
       toast.error(`No se pudo ${confirmAction} el usuario`);
     } finally {
@@ -157,6 +173,19 @@ export const UsuariosPage = () => {
         <Button onClick={openCreate}>
           <Plus size={16} className="mr-2" /> Nuevo usuario
         </Button>
+      </div>
+
+      {/* Buscador */}
+      <div className="flex flex-wrap gap-3">
+        <div className="relative flex-1 min-w-48">
+          <Search size={15} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Input
+            className="pl-8"
+            placeholder="Buscar por nombre o correo..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+          />
+        </div>
       </div>
 
       <div className="bg-white rounded-lg border overflow-hidden">
@@ -224,6 +253,12 @@ export const UsuariosPage = () => {
                 ))}
           </TableBody>
         </Table>
+        {meta && (
+          <Pagination
+            meta={meta}
+            onChange={(p) => { setPage(p); load(busqueda, p); }}
+          />
+        )}
       </div>
 
       {/* Modal crear / editar */}

@@ -1,19 +1,25 @@
 import api from "./axios";
-import { registerApi } from "./auth.api";
-import type { Usuario } from "../types";
+import type { Usuario, PaginationMeta } from "../types";
 
-export const getUsuariosApi = async (): Promise<Usuario[]> => {
-  const { data } = await api.get("/usuarios");
-  return data.data;
+export interface UsuariosResponse {
+  data: Usuario[];
+  meta: PaginationMeta;
+}
+
+export const getUsuariosApi = async (params?: {
+  page?: number; limit?: number; search?: string;
+}): Promise<UsuariosResponse> => {
+  const { data } = await api.get("/usuarios", { params });
+  return { data: data.data, meta: data.meta };
 };
 
-export const createUsuarioApi = (payload: {
-  nombre: string;
-  apellido: string;
-  correo: string;
-  contrasena: string;
-  id_rol: number;
-}) => registerApi(payload);
+export const createUsuarioApi = async (payload: {
+  nombre: string; apellido: string; correo: string;
+  contrasena: string; id_rol: number;
+}): Promise<Usuario> => {
+  const { data } = await api.post("/usuarios", payload);
+  return data.data;
+};
 
 export const updateUsuarioApi = async (
   id: number,

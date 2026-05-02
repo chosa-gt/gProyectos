@@ -3,8 +3,13 @@ import * as clienteService from "../services/cliente.service.js";
 
 export const getAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const clientes = await clienteService.getAll();
-    res.status(200).json({ status: "ok", data: clientes });
+    const { page = 1, limit = 10, search, id_empresa, id_estado_cliente } = req.query;
+    const result = await clienteService.getAll(Number(page), Number(limit), {
+      search:            search            as string | undefined,
+      id_empresa:        id_empresa        ? Number(id_empresa)        : undefined,
+      id_estado_cliente: id_estado_cliente ? Number(id_estado_cliente) : undefined,
+    });
+    res.status(200).json({ status: "ok", ...result });
   } catch (err) {
     next(err);
   }

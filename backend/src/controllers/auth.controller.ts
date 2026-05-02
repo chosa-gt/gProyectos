@@ -3,8 +3,8 @@ import * as authService from "../services/auth.service.js";
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { nombre, apellido, correo, contrasena, id_rol } = req.body;
-    const usuario = await authService.register(nombre, apellido, correo, contrasena, id_rol);
+    const { nombre, apellido, correo, contrasena } = req.body;
+    const usuario = await authService.register(nombre, apellido, correo, contrasena);
     res.status(201).json({ status: "ok", data: usuario });
   } catch (err) {
     next(err);

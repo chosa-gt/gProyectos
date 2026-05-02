@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { MoreHorizontal, Plus, Search } from "lucide-react";
 import { Button } from "../../components/ui/button";
@@ -18,7 +18,8 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "../../components/ui/select";
-import type { Cliente, Empresa, EstadoCliente } from "../../types";
+import type { Cliente, Empresa, EstadoCliente, PaginationMeta } from "../../types";
+import { Pagination } from "../../components/ui/pagination";
 import {
   getClientesApi, getEmpresasApi, getEstadosClienteApi,
   createClienteApi, updateClienteApi, deleteClienteApi,
@@ -45,6 +46,9 @@ export const ClientesPage = () => {
   const [filtroEmpresa, setFiltroEmpresa] = useState("all");
   const [filtroEstado, setFiltroEstado]   = useState("all");
 
+  const [page, setPage]                   = useState(1);
+  const [meta, setMeta]                   = useState<PaginationMeta | null>(null);
+
   const [modalOpen, setModalOpen]         = useState(false);
   const [selected, setSelected]           = useState<Cliente | null>(null);
   const [form, setForm]                   = useState(emptyForm);
@@ -53,15 +57,18 @@ export const ClientesPage = () => {
   const [toDelete, setToDelete]           = useState<Cliente | null>(null);
   const [deleting, setDeleting]           = useState(false);
 
-  const load = async () => {
+  const load = async (search: string, empresa: string, estado: string, p: number) => {
     try {
       setLoading(true);
-      const [c, e, es] = await Promise.all([
-        getClientesApi(), getEmpresasApi(), getEstadosClienteApi(),
-      ]);
-      setClientes(c);
-      setEmpresas(e);
-      setEstados(es);
+      const res = await getClientesApi({
+        page: p,
+        limit: 10,
+        search: search || undefined,
+        id_empresa: empresa !== "all" ? Number(empresa) : undefined,
+        id_estado_cliente: estado !== "all" ? Number(estado) : undefined,
+      });
+      setClientes(res.data);
+      setMeta(res.meta);
     } catch {
       toast.error("No se pudo cargar la lista de clientes");
     } finally {
@@ -69,16 +76,23 @@ export const ClientesPage = () => {
     }
   };
 
-  useEffect(() => { load(); }, []);
+  // Load catalogs once
+  useEffect(() => {
+    Promise.all([getEmpresasApi(), getEstadosClienteApi()])
+      .then(([e, es]) => { setEmpresas(e); setEstados(es); })
+      .catch(() => toast.error("No se pudieron cargar los catálogos"));
+  }, []);
 
-  const clientesFiltrados = useMemo(() => {
-    return clientes.filter((c) => {
-      const matchBusqueda = c.nombre.toLowerCase().includes(busqueda.toLowerCase());
-      const matchEmpresa  = filtroEmpresa === "all" || String(c.id_empresa) === filtroEmpresa;
-      const matchEstado   = filtroEstado  === "all" || String(c.id_estado_cliente) === filtroEstado;
-      return matchBusqueda && matchEmpresa && matchEstado;
-    });
-  }, [clientes, busqueda, filtroEmpresa, filtroEstado]);
+  useEffect(() => { load("", "all", "all", 1); }, []);
+
+  // Debounce busqueda → page 1
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPage(1);
+      load(busqueda, filtroEmpresa, filtroEstado, 1);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [busqueda]);
 
   const openCreate = () => {
     setSelected(null);
@@ -127,7 +141,7 @@ export const ClientesPage = () => {
         toast.success("Cliente creado");
       }
       setModalOpen(false);
-      load();
+      load(busqueda, filtroEmpresa, filtroEstado, page);
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Error al guardar");
     } finally {
@@ -142,7 +156,7 @@ export const ClientesPage = () => {
       await deleteClienteApi(toDelete.id_cliente);
       toast.success(`${toDelete.nombre} eliminado`);
       setConfirmOpen(false);
-      load();
+      load(busqueda, filtroEmpresa, filtroEstado, page);
     } catch {
       toast.error("No se pudo eliminar el cliente");
     } finally {
@@ -176,7 +190,15 @@ export const ClientesPage = () => {
             onChange={(e) => setBusqueda(e.target.value)}
           />
         </div>
-        <Select value={filtroEmpresa} onValueChange={(v) => setFiltroEmpresa(v ?? "all")}>
+        <Select
+          value={filtroEmpresa}
+          onValueChange={(v) => {
+            const val = v ?? "all";
+            setFiltroEmpresa(val);
+            setPage(1);
+            load(busqueda, val, filtroEstado, 1);
+          }}
+        >
           <SelectTrigger className="w-44">
             <SelectValue>
               {filtroEmpresa === "all"
@@ -193,7 +215,15 @@ export const ClientesPage = () => {
             ))}
           </SelectContent>
         </Select>
-        <Select value={filtroEstado} onValueChange={(v) => setFiltroEstado(v ?? "all")}>
+        <Select
+          value={filtroEstado}
+          onValueChange={(v) => {
+            const val = v ?? "all";
+            setFiltroEstado(val);
+            setPage(1);
+            load(busqueda, filtroEmpresa, val, 1);
+          }}
+        >
           <SelectTrigger className="w-40">
             <SelectValue>
               {filtroEstado === "all"
@@ -234,7 +264,7 @@ export const ClientesPage = () => {
                     ))}
                   </TableRow>
                 ))
-              : clientesFiltrados.length === 0
+              : clientes.length === 0
               ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center text-gray-400 py-10">
@@ -242,7 +272,7 @@ export const ClientesPage = () => {
                     </TableCell>
                   </TableRow>
                 )
-              : clientesFiltrados.map((c) => (
+              : clientes.map((c) => (
                   <TableRow key={c.id_cliente}>
                     <TableCell className="font-medium">{c.nombre}</TableCell>
                     <TableCell className="text-gray-500">{c.empresa.nombre}</TableCell>
@@ -275,6 +305,12 @@ export const ClientesPage = () => {
                 ))}
           </TableBody>
         </Table>
+        {meta && (
+          <Pagination
+            meta={meta}
+            onChange={(p) => { setPage(p); load(busqueda, filtroEmpresa, filtroEstado, p); }}
+          />
+        )}
       </div>
 
       {/* Modal crear / editar */}

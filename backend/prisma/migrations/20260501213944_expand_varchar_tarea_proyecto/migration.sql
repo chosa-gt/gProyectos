@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "proyectos" ALTER COLUMN "nombre" SET DATA TYPE VARCHAR(255);
+
+-- AlterTable
+ALTER TABLE "tareas" ALTER COLUMN "tarea" SET DATA TYPE VARCHAR(255);
