@@ -215,13 +215,26 @@ export const ProyectoDetallePage = () => {
   const exportarPDF = () => {
     if (!proyecto) return;
     const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.width;
+    const fechaExport = new Date().toLocaleDateString("es-SV", {
+      day: "2-digit", month: "short", year: "numeric",
+    });
 
+    // — App name + fecha de exportación (top right) —
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(150, 150, 150);
+    doc.text(`Sistema de Proyectos · Exportado el ${fechaExport}`, pageWidth - 14, 10, { align: "right" });
+    doc.setTextColor(0, 0, 0);
+
+    // — Encabezado —
     doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
     doc.text(proyecto.nombre, 14, 20);
     doc.setDrawColor(200);
     doc.line(14, 24, 196, 24);
 
+    // — Info del proyecto —
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     let y = 32;
@@ -246,16 +259,45 @@ export const ProyectoDetallePage = () => {
       y += (lines as string[]).length * 5 + 4;
     }
 
+    // — Resumen de tareas —
+    const tareas = proyecto.tareas ?? [];
+    const completadas = tareas.filter((t) => t.estado_tarea.estado === "Completada").length;
+    const enProgreso  = tareas.filter((t) => t.estado_tarea.estado === "En progreso").length;
+    const pendientes  = tareas.filter((t) => t.estado_tarea.estado === "Pendiente").length;
+    const canceladas  = tareas.filter((t) => t.estado_tarea.estado === "Cancelada").length;
+
     y += 4;
     doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
     doc.text("Tareas", 14, y);
-    y += 4;
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(100, 100, 100);
+    doc.text(
+      `Total: ${tareas.length}  ·  Completadas: ${completadas}  ·  En progreso: ${enProgreso}  ·  Pendientes: ${pendientes}${canceladas > 0 ? `  ·  Canceladas: ${canceladas}` : ""}`,
+      14, y + 6,
+    );
+    doc.setTextColor(0, 0, 0);
+    y += 12;
+
+    // — Tabla de tareas con colores semánticos —
+    const PRIORIDAD_RGB: Record<string, [number, number, number]> = {
+      "Crítica": [239, 68, 68],
+      "Alta":    [249, 115, 22],
+      "Media":   [59, 130, 246],
+      "Baja":    [156, 163, 175],
+    };
+    const ESTADO_TAREA_RGB: Record<string, [number, number, number]> = {
+      "Pendiente":   [156, 163, 175],
+      "En progreso": [202, 138, 4],
+      "Completada":  [34, 197, 94],
+      "Cancelada":   [239, 68, 68],
+    };
 
     autoTable(doc, {
       startY: y,
       head: [["Tarea", "Responsable", "Prioridad", "Estado", "Fecha fin"]],
-      body: (proyecto.tareas ?? []).map((t) => [
+      body: tareas.map((t) => [
         t.tarea,
         `${t.usuario.nombre} ${t.usuario.apellido}`,
         t.prioridad.nombre_prioridad,
@@ -265,8 +307,20 @@ export const ProyectoDetallePage = () => {
       styles: { fontSize: 9 },
       headStyles: { fillColor: [59, 130, 246] },
       alternateRowStyles: { fillColor: [245, 247, 250] },
+      didParseCell: (data) => {
+        if (data.section !== "body") return;
+        if (data.column.index === 2) {
+          const color = PRIORIDAD_RGB[data.cell.raw as string];
+          if (color) data.cell.styles.textColor = color;
+        }
+        if (data.column.index === 3) {
+          const color = ESTADO_TAREA_RGB[data.cell.raw as string];
+          if (color) data.cell.styles.textColor = color;
+        }
+      },
     });
 
+    // — Historial de estados —
     if (historial.length > 0) {
       const afterTable = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
       doc.setFont("helvetica", "bold");
@@ -284,6 +338,21 @@ export const ProyectoDetallePage = () => {
         styles: { fontSize: 9 },
         headStyles: { fillColor: [107, 114, 128] },
       });
+    }
+
+    // — Pie de página con número de páginas —
+    const totalPages = doc.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(150, 150, 150);
+      doc.text(
+        `Página ${i} de ${totalPages} · ${fechaExport}`,
+        pageWidth / 2,
+        doc.internal.pageSize.height - 8,
+        { align: "center" },
+      );
     }
 
     doc.save(`proyecto-${proyecto.id_proyecto}-${proyecto.nombre.replace(/\s+/g, "_")}.pdf`);
