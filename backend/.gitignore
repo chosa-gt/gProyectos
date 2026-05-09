@@ -1,5 +1,8 @@
 node_modules
-# Keep environment variables out of version control
+
+# Variables de entorno — nunca subir valores reales
 .env
+.env.*
+!.env.example
 
 /src/generated/prisma
