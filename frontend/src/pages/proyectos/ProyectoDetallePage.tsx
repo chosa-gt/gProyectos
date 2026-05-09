@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { toast } from "sonner";
-import { ArrowLeft, Pencil } from "lucide-react";
+import { ArrowLeft, Pencil, Plus } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
 import { Label } from "../../components/ui/label";
@@ -16,12 +16,14 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "../../components/ui/select";
-import type { Proyecto, Cliente, EstadoProyecto, HistorialProyecto } from "../../types";
+import type { Proyecto, Cliente, EstadoProyecto, HistorialProyecto, Usuario, Prioridad, EstadoTarea } from "../../types";
 import {
   getProyectoByIdApi, getEstadosProyectoApi,
   updateProyectoApi, getProyectoHistorialApi,
 } from "../../api/proyectos.api";
 import { getClientesApi } from "../../api/clientes.api";
+import { createTareaApi, getPrioridadesApi, getEstadosTareaApi } from "../../api/tareas.api";
+import { getUsuariosApi } from "../../api/usuarios.api";
 
 const estadoClases: Record<string, string> = {
   "Planificación": "border-blue-300 bg-blue-50 text-blue-700",
@@ -43,6 +45,11 @@ const fmtFecha = (iso: string) =>
 const fmtHora = (iso: string) =>
   new Date(iso).toLocaleTimeString("es-SV", { hour: "2-digit", minute: "2-digit" });
 
+const emptyTareaForm = {
+  tarea: "", descripcion: "", fecha_inicio: "", fecha_fin: "",
+  id_usuario: "", id_prioridad: "", id_estado_tarea: "",
+};
+
 export const ProyectoDetallePage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -55,15 +62,22 @@ export const ProyectoDetallePage = () => {
   const [saving, setSaving]       = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
 
+  // — Editar proyecto —
   const [form, setForm] = useState({
     nombre: "", descripcion: "", fecha_inicio: "", fecha_fin: "",
     id_cliente: "", id_estado_proyecto: "", detalle: "",
   });
-
-  // Estado original al abrir modal (para detectar cambio)
   const [estadoOriginal, setEstadoOriginal] = useState("");
-
   const estadoCambio = form.id_estado_proyecto !== estadoOriginal && estadoOriginal !== "";
+
+  // — Nueva tarea —
+  const [tareaModalOpen, setTareaModalOpen] = useState(false);
+  const [tareaForm, setTareaForm]           = useState(emptyTareaForm);
+  const [savingTarea, setSavingTarea]       = useState(false);
+  const [usuarios, setUsuarios]             = useState<Usuario[]>([]);
+  const [prioridades, setPrioridades]       = useState<Prioridad[]>([]);
+  const [estadosTarea, setEstadosTarea]     = useState<EstadoTarea[]>([]);
+  const [catalogsLoaded, setCatalogsLoaded] = useState(false);
 
   const load = async () => {
     try {
@@ -88,6 +102,62 @@ export const ProyectoDetallePage = () => {
 
   useEffect(() => { load(); }, [id]);
 
+  // Carga catálogos de tarea la primera vez que se abre el modal
+  const openTareaModal = async () => {
+    setTareaForm(emptyTareaForm);
+    setTareaModalOpen(true);
+    if (!catalogsLoaded) {
+      try {
+        const [u, p, e] = await Promise.all([
+          getUsuariosApi(),
+          getPrioridadesApi(),
+          getEstadosTareaApi(),
+        ]);
+        setUsuarios(u.data.filter((usr) => usr.activo));
+        setPrioridades(p);
+        setEstadosTarea(e);
+        setCatalogsLoaded(true);
+      } catch {
+        toast.error("No se pudieron cargar los catálogos");
+      }
+    }
+  };
+
+  const handleSaveTarea = async () => {
+    if (!tareaForm.tarea || !tareaForm.fecha_inicio || !tareaForm.id_usuario ||
+        !tareaForm.id_prioridad || !tareaForm.id_estado_tarea) {
+      toast.error("Nombre, fecha inicio, responsable, prioridad y estado son obligatorios");
+      return;
+    }
+    try {
+      setSavingTarea(true);
+      await createTareaApi({
+        tarea:           tareaForm.tarea,
+        descripcion:     tareaForm.descripcion || undefined,
+        fecha_inicio:    tareaForm.fecha_inicio,
+        fecha_fin:       tareaForm.fecha_fin || undefined,
+        id_proyecto:     Number(id),
+        id_usuario:      Number(tareaForm.id_usuario),
+        id_prioridad:    Number(tareaForm.id_prioridad),
+        id_estado_tarea: Number(tareaForm.id_estado_tarea),
+      });
+      toast.success("Tarea creada");
+      setTareaModalOpen(false);
+      load();
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Error al crear la tarea");
+    } finally {
+      setSavingTarea(false);
+    }
+  };
+
+  const tareaField = (key: keyof typeof emptyTareaForm) => ({
+    value: tareaForm[key],
+    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+      setTareaForm((f) => ({ ...f, [key]: e.target.value })),
+  });
+
+  // — Editar proyecto —
   const openEdit = () => {
     if (!proyecto) return;
     const estadoStr = String(proyecto.id_estado_proyecto);
@@ -208,7 +278,12 @@ export const ProyectoDetallePage = () => {
 
       {/* Tareas */}
       <div>
-        <h2 className="text-lg font-semibold text-gray-800 mb-3">Tareas</h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-semibold text-gray-800">Tareas</h2>
+          <Button size="sm" onClick={openTareaModal}>
+            <Plus size={14} className="mr-1" /> Nueva tarea
+          </Button>
+        </div>
         <div className="bg-white rounded-lg border overflow-hidden">
           <Table>
             <TableHeader>
@@ -259,25 +334,18 @@ export const ProyectoDetallePage = () => {
             <ol className="relative border-l border-gray-200 space-y-6 ml-3">
               {historial.map((h) => (
                 <li key={h.id_historial} className="ml-6">
-                  {/* Punto en la línea */}
                   <span className="absolute -left-1.5 mt-1.5 h-3 w-3 rounded-full border-2 border-white bg-gray-300" />
-
                   <div className="flex flex-wrap items-center gap-2 mb-1">
-                    <Badge
-                      variant="outline"
-                      className={estadoClases[h.estado_proyecto.estado] ?? ""}
-                    >
+                    <Badge variant="outline" className={estadoClases[h.estado_proyecto.estado] ?? ""}>
                       {h.estado_proyecto.estado}
                     </Badge>
                     <span className="text-xs text-gray-400">
                       {fmtFecha(h.fecha_cambio)} · {fmtHora(h.fecha_cambio)}
                     </span>
                   </div>
-
                   <p className="text-sm font-medium text-gray-700">
                     {h.usuario.nombre} {h.usuario.apellido}
                   </p>
-
                   {h.detalle && (
                     <p className="text-sm text-gray-500 mt-0.5 italic">"{h.detalle}"</p>
                   )}
@@ -288,7 +356,7 @@ export const ProyectoDetallePage = () => {
         )}
       </div>
 
-      {/* Modal editar */}
+      {/* Modal editar proyecto */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
@@ -364,8 +432,6 @@ export const ProyectoDetallePage = () => {
                 <Input type="date" {...field("fecha_fin")} />
               </div>
             </div>
-
-            {/* Campo detalle — solo aparece cuando el estado cambia */}
             {estadoCambio && (
               <div className="space-y-2">
                 <Label>
@@ -384,11 +450,122 @@ export const ProyectoDetallePage = () => {
             )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setModalOpen(false)}>
-              Cancelar
-            </Button>
+            <Button variant="outline" onClick={() => setModalOpen(false)}>Cancelar</Button>
             <Button onClick={handleSave} disabled={saving}>
               {saving ? "Guardando..." : "Guardar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal nueva tarea */}
+      <Dialog open={tareaModalOpen} onOpenChange={setTareaModalOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Nueva tarea</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            {/* Proyecto (solo lectura) */}
+            <div className="space-y-2">
+              <Label>Proyecto</Label>
+              <Input value={proyecto.nombre} disabled className="bg-gray-50 text-gray-500" />
+            </div>
+            <div className="space-y-2">
+              <Label>Nombre *</Label>
+              <Input placeholder="Nombre de la tarea" {...tareaField("tarea")} />
+            </div>
+            <div className="space-y-2">
+              <Label>Descripción</Label>
+              <textarea
+                className="w-full rounded-lg border border-input bg-transparent px-2.5 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 resize-none"
+                rows={2}
+                placeholder="Descripción opcional..."
+                {...tareaField("descripcion")}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Responsable *</Label>
+                <Select
+                  value={tareaForm.id_usuario}
+                  onValueChange={(v) => setTareaForm((f) => ({ ...f, id_usuario: v ?? "" }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue>
+                      {tareaForm.id_usuario
+                        ? (() => { const u = usuarios.find((u) => String(u.id_usuario) === tareaForm.id_usuario); return u ? `${u.nombre} ${u.apellido}` : "Seleccionar..."; })()
+                        : "Seleccionar..."}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {usuarios.map((u) => (
+                      <SelectItem key={u.id_usuario} value={String(u.id_usuario)}>
+                        {u.nombre} {u.apellido}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Prioridad *</Label>
+                <Select
+                  value={tareaForm.id_prioridad}
+                  onValueChange={(v) => setTareaForm((f) => ({ ...f, id_prioridad: v ?? "" }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue>
+                      {tareaForm.id_prioridad
+                        ? prioridades.find((p) => String(p.id_prioridad) === tareaForm.id_prioridad)?.nombre_prioridad
+                        : "Seleccionar..."}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {prioridades.map((p) => (
+                      <SelectItem key={p.id_prioridad} value={String(p.id_prioridad)}>
+                        {p.nombre_prioridad}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Estado *</Label>
+                <Select
+                  value={tareaForm.id_estado_tarea}
+                  onValueChange={(v) => setTareaForm((f) => ({ ...f, id_estado_tarea: v ?? "" }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue>
+                      {tareaForm.id_estado_tarea
+                        ? estadosTarea.find((e) => String(e.id_estado_tarea) === tareaForm.id_estado_tarea)?.estado
+                        : "Seleccionar..."}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {estadosTarea.map((e) => (
+                      <SelectItem key={e.id_estado_tarea} value={String(e.id_estado_tarea)}>
+                        {e.estado}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Fecha inicio *</Label>
+                <Input type="date" {...tareaField("fecha_inicio")} />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Fecha fin</Label>
+              <Input type="date" {...tareaField("fecha_fin")} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setTareaModalOpen(false)}>Cancelar</Button>
+            <Button onClick={handleSaveTarea} disabled={savingTarea}>
+              {savingTarea ? "Guardando..." : "Crear tarea"}
             </Button>
           </DialogFooter>
         </DialogContent>
