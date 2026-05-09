@@ -6,7 +6,6 @@
     "target": "ES2022",
     "strict": true,
     "esModuleInterop": true,
-    "outDir": "./dist",
-    "ignoreDeprecations": "6.0"
+    "outDir": "./dist"
   }
 }
