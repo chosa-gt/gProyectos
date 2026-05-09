@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { toast } from "sonner";
-import { ArrowLeft, Pencil, Plus } from "lucide-react";
+import { ArrowLeft, FileDown, Pencil, Plus } from "lucide-react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
 import { Label } from "../../components/ui/label";
@@ -210,6 +212,83 @@ export const ProyectoDetallePage = () => {
       setForm((f) => ({ ...f, [key]: e.target.value })),
   });
 
+  const exportarPDF = () => {
+    if (!proyecto) return;
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.text(proyecto.nombre, 14, 20);
+    doc.setDrawColor(200);
+    doc.line(14, 24, 196, 24);
+
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    let y = 32;
+    const campo = (label: string, valor: string) => {
+      doc.setFont("helvetica", "bold");
+      doc.text(`${label}:`, 14, y);
+      doc.setFont("helvetica", "normal");
+      doc.text(valor, 50, y);
+      y += 7;
+    };
+    campo("Cliente",      proyecto.cliente.nombre);
+    campo("Estado",       proyecto.estado_proyecto.estado);
+    campo("Fecha inicio", new Date(proyecto.fecha_inicio).toLocaleDateString("es-SV"));
+    if (proyecto.fecha_fin)
+      campo("Fecha fin",  new Date(proyecto.fecha_fin).toLocaleDateString("es-SV"));
+    if (proyecto.descripcion) {
+      doc.setFont("helvetica", "bold");
+      doc.text("Descripción:", 14, y); y += 6;
+      doc.setFont("helvetica", "normal");
+      const lines = doc.splitTextToSize(proyecto.descripcion, 180);
+      doc.text(lines, 14, y);
+      y += (lines as string[]).length * 5 + 4;
+    }
+
+    y += 4;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text("Tareas", 14, y);
+    y += 4;
+
+    autoTable(doc, {
+      startY: y,
+      head: [["Tarea", "Responsable", "Prioridad", "Estado", "Fecha fin"]],
+      body: (proyecto.tareas ?? []).map((t) => [
+        t.tarea,
+        `${t.usuario.nombre} ${t.usuario.apellido}`,
+        t.prioridad.nombre_prioridad,
+        t.estado_tarea.estado,
+        t.fecha_fin ? new Date(t.fecha_fin).toLocaleDateString("es-SV") : "—",
+      ]),
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [59, 130, 246] },
+      alternateRowStyles: { fillColor: [245, 247, 250] },
+    });
+
+    if (historial.length > 0) {
+      const afterTable = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 8;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text("Historial de estados", 14, afterTable);
+      autoTable(doc, {
+        startY: afterTable + 4,
+        head: [["Estado", "Usuario", "Fecha", "Detalle"]],
+        body: historial.map((h) => [
+          h.estado_proyecto.estado,
+          `${h.usuario.nombre} ${h.usuario.apellido}`,
+          fmtFecha(h.fecha_cambio),
+          h.detalle ?? "",
+        ]),
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [107, 114, 128] },
+      });
+    }
+
+    doc.save(`proyecto-${proyecto.id_proyecto}-${proyecto.nombre.replace(/\s+/g, "_")}.pdf`);
+  };
+
   if (loading) {
     return (
       <div className="space-y-6">
@@ -237,9 +316,14 @@ export const ProyectoDetallePage = () => {
           <span className="text-gray-300">/</span>
           <h1 className="text-2xl font-bold text-gray-900">{proyecto.nombre}</h1>
         </div>
-        <Button onClick={openEdit}>
-          <Pencil size={14} className="mr-2" /> Editar
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={exportarPDF}>
+            <FileDown size={14} className="mr-2" /> Exportar PDF
+          </Button>
+          <Button onClick={openEdit}>
+            <Pencil size={14} className="mr-2" /> Editar
+          </Button>
+        </div>
       </div>
 
       {/* Info del proyecto */}
