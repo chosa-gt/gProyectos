@@ -37,7 +37,7 @@ export const update = async (req: Request, res: Response, next: NextFunction) =>
   try {
     const proyecto = await proyectoService.update(
       Number(req.params.id),
-      req.usuario.id_usuario,
+      req.usuario!.id_usuario,
       req.body,
     );
     res.status(200).json({ status: "ok", data: proyecto });
