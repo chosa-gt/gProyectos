@@ -1,5 +1,5 @@
 import api from "./axios";
-import type { Proyecto, EstadoProyecto, PaginationMeta } from "../types";
+import type { Proyecto, EstadoProyecto, HistorialProyecto, PaginationMeta } from "../types";
 
 export interface ProyectosResponse {
   data: Proyecto[];
@@ -34,9 +34,14 @@ export const createProyectoApi = async (payload: {
 
 export const updateProyectoApi = async (
   id: number,
-  payload: { nombre?: string; descripcion?: string; fecha_inicio?: string; fecha_fin?: string; id_cliente?: number; id_estado_proyecto?: number }
+  payload: { nombre?: string; descripcion?: string; fecha_inicio?: string; fecha_fin?: string; id_cliente?: number; id_estado_proyecto?: number; detalle?: string }
 ): Promise<Proyecto> => {
   const { data } = await api.put(`/proyectos/${id}`, payload);
+  return data.data;
+};
+
+export const getProyectoHistorialApi = async (id: number): Promise<HistorialProyecto[]> => {
+  const { data } = await api.get(`/proyectos/${id}/historial`);
   return data.data;
 };
 

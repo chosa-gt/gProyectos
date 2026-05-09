@@ -31,6 +31,7 @@ model Usuario {
   activo     Boolean  @default(true)
   tareas     Tarea[]
   refresh_tokens RefreshToken[]
+  historial_proyectos HistorialProyecto[]
 
   rol        Rol      @relation(fields: [id_rol], references: [id_rol])
 
@@ -69,27 +70,44 @@ model Cliente {
 }
 
 model EstadoProyecto {
-  id_estado_proyecto Int        @id @default(autoincrement())
-  estado             String?    @db.VarChar(50)
+  id_estado_proyecto Int                 @id @default(autoincrement())
+  estado             String?             @db.VarChar(50)
   proyectos          Proyecto[]
+  historial          HistorialProyecto[]
 
   @@map("estado_proyecto")
 }
 
 model Proyecto {
-  id_proyecto        Int            @id @default(autoincrement())
-  nombre             String?        @db.VarChar(255)
+  id_proyecto        Int                 @id @default(autoincrement())
+  nombre             String?             @db.VarChar(255)
   descripcion        String?
-  fecha_inicio       DateTime       @db.Date
-  fecha_fin          DateTime?      @db.Date
+  fecha_inicio       DateTime            @db.Date
+  fecha_fin          DateTime?           @db.Date
   id_cliente         Int
   id_estado_proyecto Int
   tareas             Tarea[]
+  historial          HistorialProyecto[]
 
-  cliente            Cliente        @relation(fields: [id_cliente], references: [id_cliente])
-  estado_proyecto    EstadoProyecto @relation(fields: [id_estado_proyecto], references: [id_estado_proyecto])
+  cliente            Cliente             @relation(fields: [id_cliente], references: [id_cliente])
+  estado_proyecto    EstadoProyecto      @relation(fields: [id_estado_proyecto], references: [id_estado_proyecto])
 
   @@map("proyectos")
+}
+
+model HistorialProyecto {
+  id_historial       Int            @id @default(autoincrement())
+  id_proyecto        Int
+  id_estado_proyecto Int
+  id_usuario         Int
+  detalle            String?        @db.VarChar(500)
+  fecha_cambio       DateTime       @default(now())
+
+  proyecto           Proyecto       @relation(fields: [id_proyecto], references: [id_proyecto], onDelete: Cascade)
+  estado_proyecto    EstadoProyecto @relation(fields: [id_estado_proyecto], references: [id_estado_proyecto])
+  usuario            Usuario        @relation(fields: [id_usuario], references: [id_usuario])
+
+  @@map("historial_proyecto")
 }
 
 model Prioridad {

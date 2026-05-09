@@ -391,6 +391,7 @@ export const ModelName = {
   Cliente: 'Cliente',
   EstadoProyecto: 'EstadoProyecto',
   Proyecto: 'Proyecto',
+  HistorialProyecto: 'HistorialProyecto',
   Prioridad: 'Prioridad',
   EstadoTarea: 'EstadoTarea',
   Tarea: 'Tarea',
@@ -410,7 +411,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "rol" | "usuario" | "empresa" | "estadoCliente" | "cliente" | "estadoProyecto" | "proyecto" | "prioridad" | "estadoTarea" | "tarea" | "refreshToken"
+    modelProps: "rol" | "usuario" | "empresa" | "estadoCliente" | "cliente" | "estadoProyecto" | "proyecto" | "historialProyecto" | "prioridad" | "estadoTarea" | "tarea" | "refreshToken"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -932,6 +933,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    HistorialProyecto: {
+      payload: Prisma.$HistorialProyectoPayload<ExtArgs>
+      fields: Prisma.HistorialProyectoFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.HistorialProyectoFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HistorialProyectoPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.HistorialProyectoFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HistorialProyectoPayload>
+        }
+        findFirst: {
+          args: Prisma.HistorialProyectoFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HistorialProyectoPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.HistorialProyectoFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HistorialProyectoPayload>
+        }
+        findMany: {
+          args: Prisma.HistorialProyectoFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HistorialProyectoPayload>[]
+        }
+        create: {
+          args: Prisma.HistorialProyectoCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HistorialProyectoPayload>
+        }
+        createMany: {
+          args: Prisma.HistorialProyectoCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.HistorialProyectoCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HistorialProyectoPayload>[]
+        }
+        delete: {
+          args: Prisma.HistorialProyectoDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HistorialProyectoPayload>
+        }
+        update: {
+          args: Prisma.HistorialProyectoUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HistorialProyectoPayload>
+        }
+        deleteMany: {
+          args: Prisma.HistorialProyectoDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.HistorialProyectoUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.HistorialProyectoUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HistorialProyectoPayload>[]
+        }
+        upsert: {
+          args: Prisma.HistorialProyectoUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$HistorialProyectoPayload>
+        }
+        aggregate: {
+          args: Prisma.HistorialProyectoAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateHistorialProyecto>
+        }
+        groupBy: {
+          args: Prisma.HistorialProyectoGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HistorialProyectoGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.HistorialProyectoCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.HistorialProyectoCountAggregateOutputType> | number
+        }
+      }
+    }
     Prioridad: {
       payload: Prisma.$PrioridadPayload<ExtArgs>
       fields: Prisma.PrioridadFieldRefs
@@ -1337,6 +1412,18 @@ export const ProyectoScalarFieldEnum = {
 export type ProyectoScalarFieldEnum = (typeof ProyectoScalarFieldEnum)[keyof typeof ProyectoScalarFieldEnum]
 
 
+export const HistorialProyectoScalarFieldEnum = {
+  id_historial: 'id_historial',
+  id_proyecto: 'id_proyecto',
+  id_estado_proyecto: 'id_estado_proyecto',
+  id_usuario: 'id_usuario',
+  detalle: 'detalle',
+  fecha_cambio: 'fecha_cambio'
+} as const
+
+export type HistorialProyectoScalarFieldEnum = (typeof HistorialProyectoScalarFieldEnum)[keyof typeof HistorialProyectoScalarFieldEnum]
+
+
 export const PrioridadScalarFieldEnum = {
   id_prioridad: 'id_prioridad',
   nombre_prioridad: 'nombre_prioridad'
@@ -1573,6 +1660,7 @@ export type GlobalOmitConfig = {
   cliente?: Prisma.ClienteOmit
   estadoProyecto?: Prisma.EstadoProyectoOmit
   proyecto?: Prisma.ProyectoOmit
+  historialProyecto?: Prisma.HistorialProyectoOmit
   prioridad?: Prisma.PrioridadOmit
   estadoTarea?: Prisma.EstadoTareaOmit
   tarea?: Prisma.TareaOmit

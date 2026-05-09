@@ -15,7 +15,7 @@ export const getClientesApi = async (params?: {
 };
 
 export const getEmpresasApi = async (): Promise<Empresa[]> => {
-  const { data } = await api.get("/clientes/empresas");
+  const { data } = await api.get("/empresas");
   return data.data;
 };
 

@@ -7,10 +7,12 @@ import { createUsuarioSchema, updateUsuarioSchema } from "../schemas/usuario.sch
 
 const router = Router();
 
-// Solo Admin
+// Lectura: cualquier usuario autenticado (necesario para asignar responsables en tareas)
+router.get("/",               authMiddleware, usuarioController.getAll);
+router.get("/:id",            authMiddleware, usuarioController.getById);
+
+// Escritura: solo Admin
 router.post("/",              authMiddleware, roleMiddleware(1), validate(createUsuarioSchema), usuarioController.create);
-router.get("/",               authMiddleware, roleMiddleware(1), usuarioController.getAll);
-router.get("/:id",            authMiddleware, roleMiddleware(1), usuarioController.getById);
 router.put("/:id",            authMiddleware, roleMiddleware(1), validate(updateUsuarioSchema), usuarioController.update);
 router.delete("/:id",         authMiddleware, roleMiddleware(1), usuarioController.desactivar);
 router.patch("/:id/activar",  authMiddleware, roleMiddleware(1), usuarioController.activar);

@@ -241,6 +241,7 @@ export type ProyectoWhereInput = {
   id_cliente?: Prisma.IntFilter<"Proyecto"> | number
   id_estado_proyecto?: Prisma.IntFilter<"Proyecto"> | number
   tareas?: Prisma.TareaListRelationFilter
+  historial?: Prisma.HistorialProyectoListRelationFilter
   cliente?: Prisma.XOR<Prisma.ClienteScalarRelationFilter, Prisma.ClienteWhereInput>
   estado_proyecto?: Prisma.XOR<Prisma.EstadoProyectoScalarRelationFilter, Prisma.EstadoProyectoWhereInput>
 }
@@ -254,6 +255,7 @@ export type ProyectoOrderByWithRelationInput = {
   id_cliente?: Prisma.SortOrder
   id_estado_proyecto?: Prisma.SortOrder
   tareas?: Prisma.TareaOrderByRelationAggregateInput
+  historial?: Prisma.HistorialProyectoOrderByRelationAggregateInput
   cliente?: Prisma.ClienteOrderByWithRelationInput
   estado_proyecto?: Prisma.EstadoProyectoOrderByWithRelationInput
 }
@@ -270,6 +272,7 @@ export type ProyectoWhereUniqueInput = Prisma.AtLeast<{
   id_cliente?: Prisma.IntFilter<"Proyecto"> | number
   id_estado_proyecto?: Prisma.IntFilter<"Proyecto"> | number
   tareas?: Prisma.TareaListRelationFilter
+  historial?: Prisma.HistorialProyectoListRelationFilter
   cliente?: Prisma.XOR<Prisma.ClienteScalarRelationFilter, Prisma.ClienteWhereInput>
   estado_proyecto?: Prisma.XOR<Prisma.EstadoProyectoScalarRelationFilter, Prisma.EstadoProyectoWhereInput>
 }, "id_proyecto">
@@ -308,6 +311,7 @@ export type ProyectoCreateInput = {
   fecha_inicio: Date | string
   fecha_fin?: Date | string | null
   tareas?: Prisma.TareaCreateNestedManyWithoutProyectoInput
+  historial?: Prisma.HistorialProyectoCreateNestedManyWithoutProyectoInput
   cliente: Prisma.ClienteCreateNestedOneWithoutProyectosInput
   estado_proyecto: Prisma.EstadoProyectoCreateNestedOneWithoutProyectosInput
 }
@@ -321,6 +325,7 @@ export type ProyectoUncheckedCreateInput = {
   id_cliente: number
   id_estado_proyecto: number
   tareas?: Prisma.TareaUncheckedCreateNestedManyWithoutProyectoInput
+  historial?: Prisma.HistorialProyectoUncheckedCreateNestedManyWithoutProyectoInput
 }
 
 export type ProyectoUpdateInput = {
@@ -329,6 +334,7 @@ export type ProyectoUpdateInput = {
   fecha_inicio?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fecha_fin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   tareas?: Prisma.TareaUpdateManyWithoutProyectoNestedInput
+  historial?: Prisma.HistorialProyectoUpdateManyWithoutProyectoNestedInput
   cliente?: Prisma.ClienteUpdateOneRequiredWithoutProyectosNestedInput
   estado_proyecto?: Prisma.EstadoProyectoUpdateOneRequiredWithoutProyectosNestedInput
 }
@@ -342,6 +348,7 @@ export type ProyectoUncheckedUpdateInput = {
   id_cliente?: Prisma.IntFieldUpdateOperationsInput | number
   id_estado_proyecto?: Prisma.IntFieldUpdateOperationsInput | number
   tareas?: Prisma.TareaUncheckedUpdateManyWithoutProyectoNestedInput
+  historial?: Prisma.HistorialProyectoUncheckedUpdateManyWithoutProyectoNestedInput
 }
 
 export type ProyectoCreateManyInput = {
@@ -520,6 +527,20 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
 }
 
+export type ProyectoCreateNestedOneWithoutHistorialInput = {
+  create?: Prisma.XOR<Prisma.ProyectoCreateWithoutHistorialInput, Prisma.ProyectoUncheckedCreateWithoutHistorialInput>
+  connectOrCreate?: Prisma.ProyectoCreateOrConnectWithoutHistorialInput
+  connect?: Prisma.ProyectoWhereUniqueInput
+}
+
+export type ProyectoUpdateOneRequiredWithoutHistorialNestedInput = {
+  create?: Prisma.XOR<Prisma.ProyectoCreateWithoutHistorialInput, Prisma.ProyectoUncheckedCreateWithoutHistorialInput>
+  connectOrCreate?: Prisma.ProyectoCreateOrConnectWithoutHistorialInput
+  upsert?: Prisma.ProyectoUpsertWithoutHistorialInput
+  connect?: Prisma.ProyectoWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProyectoUpdateToOneWithWhereWithoutHistorialInput, Prisma.ProyectoUpdateWithoutHistorialInput>, Prisma.ProyectoUncheckedUpdateWithoutHistorialInput>
+}
+
 export type ProyectoCreateNestedOneWithoutTareasInput = {
   create?: Prisma.XOR<Prisma.ProyectoCreateWithoutTareasInput, Prisma.ProyectoUncheckedCreateWithoutTareasInput>
   connectOrCreate?: Prisma.ProyectoCreateOrConnectWithoutTareasInput
@@ -540,6 +561,7 @@ export type ProyectoCreateWithoutClienteInput = {
   fecha_inicio: Date | string
   fecha_fin?: Date | string | null
   tareas?: Prisma.TareaCreateNestedManyWithoutProyectoInput
+  historial?: Prisma.HistorialProyectoCreateNestedManyWithoutProyectoInput
   estado_proyecto: Prisma.EstadoProyectoCreateNestedOneWithoutProyectosInput
 }
 
@@ -551,6 +573,7 @@ export type ProyectoUncheckedCreateWithoutClienteInput = {
   fecha_fin?: Date | string | null
   id_estado_proyecto: number
   tareas?: Prisma.TareaUncheckedCreateNestedManyWithoutProyectoInput
+  historial?: Prisma.HistorialProyectoUncheckedCreateNestedManyWithoutProyectoInput
 }
 
 export type ProyectoCreateOrConnectWithoutClienteInput = {
@@ -598,6 +621,7 @@ export type ProyectoCreateWithoutEstado_proyectoInput = {
   fecha_inicio: Date | string
   fecha_fin?: Date | string | null
   tareas?: Prisma.TareaCreateNestedManyWithoutProyectoInput
+  historial?: Prisma.HistorialProyectoCreateNestedManyWithoutProyectoInput
   cliente: Prisma.ClienteCreateNestedOneWithoutProyectosInput
 }
 
@@ -609,6 +633,7 @@ export type ProyectoUncheckedCreateWithoutEstado_proyectoInput = {
   fecha_fin?: Date | string | null
   id_cliente: number
   tareas?: Prisma.TareaUncheckedCreateNestedManyWithoutProyectoInput
+  historial?: Prisma.HistorialProyectoUncheckedCreateNestedManyWithoutProyectoInput
 }
 
 export type ProyectoCreateOrConnectWithoutEstado_proyectoInput = {
@@ -637,11 +662,70 @@ export type ProyectoUpdateManyWithWhereWithoutEstado_proyectoInput = {
   data: Prisma.XOR<Prisma.ProyectoUpdateManyMutationInput, Prisma.ProyectoUncheckedUpdateManyWithoutEstado_proyectoInput>
 }
 
+export type ProyectoCreateWithoutHistorialInput = {
+  nombre?: string | null
+  descripcion?: string | null
+  fecha_inicio: Date | string
+  fecha_fin?: Date | string | null
+  tareas?: Prisma.TareaCreateNestedManyWithoutProyectoInput
+  cliente: Prisma.ClienteCreateNestedOneWithoutProyectosInput
+  estado_proyecto: Prisma.EstadoProyectoCreateNestedOneWithoutProyectosInput
+}
+
+export type ProyectoUncheckedCreateWithoutHistorialInput = {
+  id_proyecto?: number
+  nombre?: string | null
+  descripcion?: string | null
+  fecha_inicio: Date | string
+  fecha_fin?: Date | string | null
+  id_cliente: number
+  id_estado_proyecto: number
+  tareas?: Prisma.TareaUncheckedCreateNestedManyWithoutProyectoInput
+}
+
+export type ProyectoCreateOrConnectWithoutHistorialInput = {
+  where: Prisma.ProyectoWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProyectoCreateWithoutHistorialInput, Prisma.ProyectoUncheckedCreateWithoutHistorialInput>
+}
+
+export type ProyectoUpsertWithoutHistorialInput = {
+  update: Prisma.XOR<Prisma.ProyectoUpdateWithoutHistorialInput, Prisma.ProyectoUncheckedUpdateWithoutHistorialInput>
+  create: Prisma.XOR<Prisma.ProyectoCreateWithoutHistorialInput, Prisma.ProyectoUncheckedCreateWithoutHistorialInput>
+  where?: Prisma.ProyectoWhereInput
+}
+
+export type ProyectoUpdateToOneWithWhereWithoutHistorialInput = {
+  where?: Prisma.ProyectoWhereInput
+  data: Prisma.XOR<Prisma.ProyectoUpdateWithoutHistorialInput, Prisma.ProyectoUncheckedUpdateWithoutHistorialInput>
+}
+
+export type ProyectoUpdateWithoutHistorialInput = {
+  nombre?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fecha_inicio?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fecha_fin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tareas?: Prisma.TareaUpdateManyWithoutProyectoNestedInput
+  cliente?: Prisma.ClienteUpdateOneRequiredWithoutProyectosNestedInput
+  estado_proyecto?: Prisma.EstadoProyectoUpdateOneRequiredWithoutProyectosNestedInput
+}
+
+export type ProyectoUncheckedUpdateWithoutHistorialInput = {
+  id_proyecto?: Prisma.IntFieldUpdateOperationsInput | number
+  nombre?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  fecha_inicio?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fecha_fin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  id_cliente?: Prisma.IntFieldUpdateOperationsInput | number
+  id_estado_proyecto?: Prisma.IntFieldUpdateOperationsInput | number
+  tareas?: Prisma.TareaUncheckedUpdateManyWithoutProyectoNestedInput
+}
+
 export type ProyectoCreateWithoutTareasInput = {
   nombre?: string | null
   descripcion?: string | null
   fecha_inicio: Date | string
   fecha_fin?: Date | string | null
+  historial?: Prisma.HistorialProyectoCreateNestedManyWithoutProyectoInput
   cliente: Prisma.ClienteCreateNestedOneWithoutProyectosInput
   estado_proyecto: Prisma.EstadoProyectoCreateNestedOneWithoutProyectosInput
 }
@@ -654,6 +738,7 @@ export type ProyectoUncheckedCreateWithoutTareasInput = {
   fecha_fin?: Date | string | null
   id_cliente: number
   id_estado_proyecto: number
+  historial?: Prisma.HistorialProyectoUncheckedCreateNestedManyWithoutProyectoInput
 }
 
 export type ProyectoCreateOrConnectWithoutTareasInput = {
@@ -677,6 +762,7 @@ export type ProyectoUpdateWithoutTareasInput = {
   descripcion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   fecha_inicio?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fecha_fin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  historial?: Prisma.HistorialProyectoUpdateManyWithoutProyectoNestedInput
   cliente?: Prisma.ClienteUpdateOneRequiredWithoutProyectosNestedInput
   estado_proyecto?: Prisma.EstadoProyectoUpdateOneRequiredWithoutProyectosNestedInput
 }
@@ -689,6 +775,7 @@ export type ProyectoUncheckedUpdateWithoutTareasInput = {
   fecha_fin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   id_cliente?: Prisma.IntFieldUpdateOperationsInput | number
   id_estado_proyecto?: Prisma.IntFieldUpdateOperationsInput | number
+  historial?: Prisma.HistorialProyectoUncheckedUpdateManyWithoutProyectoNestedInput
 }
 
 export type ProyectoCreateManyClienteInput = {
@@ -706,6 +793,7 @@ export type ProyectoUpdateWithoutClienteInput = {
   fecha_inicio?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fecha_fin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   tareas?: Prisma.TareaUpdateManyWithoutProyectoNestedInput
+  historial?: Prisma.HistorialProyectoUpdateManyWithoutProyectoNestedInput
   estado_proyecto?: Prisma.EstadoProyectoUpdateOneRequiredWithoutProyectosNestedInput
 }
 
@@ -717,6 +805,7 @@ export type ProyectoUncheckedUpdateWithoutClienteInput = {
   fecha_fin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   id_estado_proyecto?: Prisma.IntFieldUpdateOperationsInput | number
   tareas?: Prisma.TareaUncheckedUpdateManyWithoutProyectoNestedInput
+  historial?: Prisma.HistorialProyectoUncheckedUpdateManyWithoutProyectoNestedInput
 }
 
 export type ProyectoUncheckedUpdateManyWithoutClienteInput = {
@@ -743,6 +832,7 @@ export type ProyectoUpdateWithoutEstado_proyectoInput = {
   fecha_inicio?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   fecha_fin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   tareas?: Prisma.TareaUpdateManyWithoutProyectoNestedInput
+  historial?: Prisma.HistorialProyectoUpdateManyWithoutProyectoNestedInput
   cliente?: Prisma.ClienteUpdateOneRequiredWithoutProyectosNestedInput
 }
 
@@ -754,6 +844,7 @@ export type ProyectoUncheckedUpdateWithoutEstado_proyectoInput = {
   fecha_fin?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   id_cliente?: Prisma.IntFieldUpdateOperationsInput | number
   tareas?: Prisma.TareaUncheckedUpdateManyWithoutProyectoNestedInput
+  historial?: Prisma.HistorialProyectoUncheckedUpdateManyWithoutProyectoNestedInput
 }
 
 export type ProyectoUncheckedUpdateManyWithoutEstado_proyectoInput = {
@@ -772,10 +863,12 @@ export type ProyectoUncheckedUpdateManyWithoutEstado_proyectoInput = {
 
 export type ProyectoCountOutputType = {
   tareas: number
+  historial: number
 }
 
 export type ProyectoCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tareas?: boolean | ProyectoCountOutputTypeCountTareasArgs
+  historial?: boolean | ProyectoCountOutputTypeCountHistorialArgs
 }
 
 /**
@@ -795,6 +888,13 @@ export type ProyectoCountOutputTypeCountTareasArgs<ExtArgs extends runtime.Types
   where?: Prisma.TareaWhereInput
 }
 
+/**
+ * ProyectoCountOutputType without action
+ */
+export type ProyectoCountOutputTypeCountHistorialArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.HistorialProyectoWhereInput
+}
+
 
 export type ProyectoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id_proyecto?: boolean
@@ -805,6 +905,7 @@ export type ProyectoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   id_cliente?: boolean
   id_estado_proyecto?: boolean
   tareas?: boolean | Prisma.Proyecto$tareasArgs<ExtArgs>
+  historial?: boolean | Prisma.Proyecto$historialArgs<ExtArgs>
   cliente?: boolean | Prisma.ClienteDefaultArgs<ExtArgs>
   estado_proyecto?: boolean | Prisma.EstadoProyectoDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.ProyectoCountOutputTypeDefaultArgs<ExtArgs>
@@ -847,6 +948,7 @@ export type ProyectoSelectScalar = {
 export type ProyectoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id_proyecto" | "nombre" | "descripcion" | "fecha_inicio" | "fecha_fin" | "id_cliente" | "id_estado_proyecto", ExtArgs["result"]["proyecto"]>
 export type ProyectoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tareas?: boolean | Prisma.Proyecto$tareasArgs<ExtArgs>
+  historial?: boolean | Prisma.Proyecto$historialArgs<ExtArgs>
   cliente?: boolean | Prisma.ClienteDefaultArgs<ExtArgs>
   estado_proyecto?: boolean | Prisma.EstadoProyectoDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.ProyectoCountOutputTypeDefaultArgs<ExtArgs>
@@ -864,6 +966,7 @@ export type $ProyectoPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   name: "Proyecto"
   objects: {
     tareas: Prisma.$TareaPayload<ExtArgs>[]
+    historial: Prisma.$HistorialProyectoPayload<ExtArgs>[]
     cliente: Prisma.$ClientePayload<ExtArgs>
     estado_proyecto: Prisma.$EstadoProyectoPayload<ExtArgs>
   }
@@ -1270,6 +1373,7 @@ readonly fields: ProyectoFieldRefs;
 export interface Prisma__ProyectoClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   tareas<T extends Prisma.Proyecto$tareasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Proyecto$tareasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TareaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  historial<T extends Prisma.Proyecto$historialArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Proyecto$historialArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HistorialProyectoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   cliente<T extends Prisma.ClienteDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ClienteDefaultArgs<ExtArgs>>): Prisma.Prisma__ClienteClient<runtime.Types.Result.GetResult<Prisma.$ClientePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   estado_proyecto<T extends Prisma.EstadoProyectoDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EstadoProyectoDefaultArgs<ExtArgs>>): Prisma.Prisma__EstadoProyectoClient<runtime.Types.Result.GetResult<Prisma.$EstadoProyectoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
@@ -1730,6 +1834,30 @@ export type Proyecto$tareasArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.TareaScalarFieldEnum | Prisma.TareaScalarFieldEnum[]
+}
+
+/**
+ * Proyecto.historial
+ */
+export type Proyecto$historialArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the HistorialProyecto
+   */
+  select?: Prisma.HistorialProyectoSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the HistorialProyecto
+   */
+  omit?: Prisma.HistorialProyectoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.HistorialProyectoInclude<ExtArgs> | null
+  where?: Prisma.HistorialProyectoWhereInput
+  orderBy?: Prisma.HistorialProyectoOrderByWithRelationInput | Prisma.HistorialProyectoOrderByWithRelationInput[]
+  cursor?: Prisma.HistorialProyectoWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.HistorialProyectoScalarFieldEnum | Prisma.HistorialProyectoScalarFieldEnum[]
 }
 
 /**

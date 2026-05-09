@@ -32,6 +32,7 @@ const estadoClases: Record<string, string> = {
   "En progreso":   "border-yellow-300 bg-yellow-50 text-yellow-700",
   "Finalizado":    "border-green-300 bg-green-50 text-green-700",
   "Cancelado":     "border-gray-300 bg-gray-100 text-gray-500",
+  "Pausado":       "border-purple-300 bg-purple-50 text-purple-700",
 };
 
 const emptyForm = {

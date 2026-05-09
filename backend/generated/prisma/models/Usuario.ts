@@ -238,6 +238,7 @@ export type UsuarioWhereInput = {
   activo?: Prisma.BoolFilter<"Usuario"> | boolean
   tareas?: Prisma.TareaListRelationFilter
   refresh_tokens?: Prisma.RefreshTokenListRelationFilter
+  historial_proyectos?: Prisma.HistorialProyectoListRelationFilter
   rol?: Prisma.XOR<Prisma.RolScalarRelationFilter, Prisma.RolWhereInput>
 }
 
@@ -251,6 +252,7 @@ export type UsuarioOrderByWithRelationInput = {
   activo?: Prisma.SortOrder
   tareas?: Prisma.TareaOrderByRelationAggregateInput
   refresh_tokens?: Prisma.RefreshTokenOrderByRelationAggregateInput
+  historial_proyectos?: Prisma.HistorialProyectoOrderByRelationAggregateInput
   rol?: Prisma.RolOrderByWithRelationInput
 }
 
@@ -267,6 +269,7 @@ export type UsuarioWhereUniqueInput = Prisma.AtLeast<{
   activo?: Prisma.BoolFilter<"Usuario"> | boolean
   tareas?: Prisma.TareaListRelationFilter
   refresh_tokens?: Prisma.RefreshTokenListRelationFilter
+  historial_proyectos?: Prisma.HistorialProyectoListRelationFilter
   rol?: Prisma.XOR<Prisma.RolScalarRelationFilter, Prisma.RolWhereInput>
 }, "id_usuario" | "correo">
 
@@ -306,6 +309,7 @@ export type UsuarioCreateInput = {
   activo?: boolean
   tareas?: Prisma.TareaCreateNestedManyWithoutUsuarioInput
   refresh_tokens?: Prisma.RefreshTokenCreateNestedManyWithoutUsuarioInput
+  historial_proyectos?: Prisma.HistorialProyectoCreateNestedManyWithoutUsuarioInput
   rol: Prisma.RolCreateNestedOneWithoutUsuariosInput
 }
 
@@ -319,6 +323,7 @@ export type UsuarioUncheckedCreateInput = {
   activo?: boolean
   tareas?: Prisma.TareaUncheckedCreateNestedManyWithoutUsuarioInput
   refresh_tokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUsuarioInput
+  historial_proyectos?: Prisma.HistorialProyectoUncheckedCreateNestedManyWithoutUsuarioInput
 }
 
 export type UsuarioUpdateInput = {
@@ -329,6 +334,7 @@ export type UsuarioUpdateInput = {
   activo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tareas?: Prisma.TareaUpdateManyWithoutUsuarioNestedInput
   refresh_tokens?: Prisma.RefreshTokenUpdateManyWithoutUsuarioNestedInput
+  historial_proyectos?: Prisma.HistorialProyectoUpdateManyWithoutUsuarioNestedInput
   rol?: Prisma.RolUpdateOneRequiredWithoutUsuariosNestedInput
 }
 
@@ -342,6 +348,7 @@ export type UsuarioUncheckedUpdateInput = {
   activo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tareas?: Prisma.TareaUncheckedUpdateManyWithoutUsuarioNestedInput
   refresh_tokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUsuarioNestedInput
+  historial_proyectos?: Prisma.HistorialProyectoUncheckedUpdateManyWithoutUsuarioNestedInput
 }
 
 export type UsuarioCreateManyInput = {
@@ -477,6 +484,20 @@ export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
+export type UsuarioCreateNestedOneWithoutHistorial_proyectosInput = {
+  create?: Prisma.XOR<Prisma.UsuarioCreateWithoutHistorial_proyectosInput, Prisma.UsuarioUncheckedCreateWithoutHistorial_proyectosInput>
+  connectOrCreate?: Prisma.UsuarioCreateOrConnectWithoutHistorial_proyectosInput
+  connect?: Prisma.UsuarioWhereUniqueInput
+}
+
+export type UsuarioUpdateOneRequiredWithoutHistorial_proyectosNestedInput = {
+  create?: Prisma.XOR<Prisma.UsuarioCreateWithoutHistorial_proyectosInput, Prisma.UsuarioUncheckedCreateWithoutHistorial_proyectosInput>
+  connectOrCreate?: Prisma.UsuarioCreateOrConnectWithoutHistorial_proyectosInput
+  upsert?: Prisma.UsuarioUpsertWithoutHistorial_proyectosInput
+  connect?: Prisma.UsuarioWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UsuarioUpdateToOneWithWhereWithoutHistorial_proyectosInput, Prisma.UsuarioUpdateWithoutHistorial_proyectosInput>, Prisma.UsuarioUncheckedUpdateWithoutHistorial_proyectosInput>
+}
+
 export type UsuarioCreateNestedOneWithoutTareasInput = {
   create?: Prisma.XOR<Prisma.UsuarioCreateWithoutTareasInput, Prisma.UsuarioUncheckedCreateWithoutTareasInput>
   connectOrCreate?: Prisma.UsuarioCreateOrConnectWithoutTareasInput
@@ -513,6 +534,7 @@ export type UsuarioCreateWithoutRolInput = {
   activo?: boolean
   tareas?: Prisma.TareaCreateNestedManyWithoutUsuarioInput
   refresh_tokens?: Prisma.RefreshTokenCreateNestedManyWithoutUsuarioInput
+  historial_proyectos?: Prisma.HistorialProyectoCreateNestedManyWithoutUsuarioInput
 }
 
 export type UsuarioUncheckedCreateWithoutRolInput = {
@@ -524,6 +546,7 @@ export type UsuarioUncheckedCreateWithoutRolInput = {
   activo?: boolean
   tareas?: Prisma.TareaUncheckedCreateNestedManyWithoutUsuarioInput
   refresh_tokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUsuarioInput
+  historial_proyectos?: Prisma.HistorialProyectoUncheckedCreateNestedManyWithoutUsuarioInput
 }
 
 export type UsuarioCreateOrConnectWithoutRolInput = {
@@ -565,6 +588,68 @@ export type UsuarioScalarWhereInput = {
   activo?: Prisma.BoolFilter<"Usuario"> | boolean
 }
 
+export type UsuarioCreateWithoutHistorial_proyectosInput = {
+  nombre?: string | null
+  apellido?: string | null
+  correo: string
+  contrasena: string
+  activo?: boolean
+  tareas?: Prisma.TareaCreateNestedManyWithoutUsuarioInput
+  refresh_tokens?: Prisma.RefreshTokenCreateNestedManyWithoutUsuarioInput
+  rol: Prisma.RolCreateNestedOneWithoutUsuariosInput
+}
+
+export type UsuarioUncheckedCreateWithoutHistorial_proyectosInput = {
+  id_usuario?: number
+  nombre?: string | null
+  apellido?: string | null
+  correo: string
+  contrasena: string
+  id_rol: number
+  activo?: boolean
+  tareas?: Prisma.TareaUncheckedCreateNestedManyWithoutUsuarioInput
+  refresh_tokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUsuarioInput
+}
+
+export type UsuarioCreateOrConnectWithoutHistorial_proyectosInput = {
+  where: Prisma.UsuarioWhereUniqueInput
+  create: Prisma.XOR<Prisma.UsuarioCreateWithoutHistorial_proyectosInput, Prisma.UsuarioUncheckedCreateWithoutHistorial_proyectosInput>
+}
+
+export type UsuarioUpsertWithoutHistorial_proyectosInput = {
+  update: Prisma.XOR<Prisma.UsuarioUpdateWithoutHistorial_proyectosInput, Prisma.UsuarioUncheckedUpdateWithoutHistorial_proyectosInput>
+  create: Prisma.XOR<Prisma.UsuarioCreateWithoutHistorial_proyectosInput, Prisma.UsuarioUncheckedCreateWithoutHistorial_proyectosInput>
+  where?: Prisma.UsuarioWhereInput
+}
+
+export type UsuarioUpdateToOneWithWhereWithoutHistorial_proyectosInput = {
+  where?: Prisma.UsuarioWhereInput
+  data: Prisma.XOR<Prisma.UsuarioUpdateWithoutHistorial_proyectosInput, Prisma.UsuarioUncheckedUpdateWithoutHistorial_proyectosInput>
+}
+
+export type UsuarioUpdateWithoutHistorial_proyectosInput = {
+  nombre?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  apellido?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correo?: Prisma.StringFieldUpdateOperationsInput | string
+  contrasena?: Prisma.StringFieldUpdateOperationsInput | string
+  activo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  tareas?: Prisma.TareaUpdateManyWithoutUsuarioNestedInput
+  refresh_tokens?: Prisma.RefreshTokenUpdateManyWithoutUsuarioNestedInput
+  rol?: Prisma.RolUpdateOneRequiredWithoutUsuariosNestedInput
+}
+
+export type UsuarioUncheckedUpdateWithoutHistorial_proyectosInput = {
+  id_usuario?: Prisma.IntFieldUpdateOperationsInput | number
+  nombre?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  apellido?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  correo?: Prisma.StringFieldUpdateOperationsInput | string
+  contrasena?: Prisma.StringFieldUpdateOperationsInput | string
+  id_rol?: Prisma.IntFieldUpdateOperationsInput | number
+  activo?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  tareas?: Prisma.TareaUncheckedUpdateManyWithoutUsuarioNestedInput
+  refresh_tokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUsuarioNestedInput
+}
+
 export type UsuarioCreateWithoutTareasInput = {
   nombre?: string | null
   apellido?: string | null
@@ -572,6 +657,7 @@ export type UsuarioCreateWithoutTareasInput = {
   contrasena: string
   activo?: boolean
   refresh_tokens?: Prisma.RefreshTokenCreateNestedManyWithoutUsuarioInput
+  historial_proyectos?: Prisma.HistorialProyectoCreateNestedManyWithoutUsuarioInput
   rol: Prisma.RolCreateNestedOneWithoutUsuariosInput
 }
 
@@ -584,6 +670,7 @@ export type UsuarioUncheckedCreateWithoutTareasInput = {
   id_rol: number
   activo?: boolean
   refresh_tokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUsuarioInput
+  historial_proyectos?: Prisma.HistorialProyectoUncheckedCreateNestedManyWithoutUsuarioInput
 }
 
 export type UsuarioCreateOrConnectWithoutTareasInput = {
@@ -609,6 +696,7 @@ export type UsuarioUpdateWithoutTareasInput = {
   contrasena?: Prisma.StringFieldUpdateOperationsInput | string
   activo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   refresh_tokens?: Prisma.RefreshTokenUpdateManyWithoutUsuarioNestedInput
+  historial_proyectos?: Prisma.HistorialProyectoUpdateManyWithoutUsuarioNestedInput
   rol?: Prisma.RolUpdateOneRequiredWithoutUsuariosNestedInput
 }
 
@@ -621,6 +709,7 @@ export type UsuarioUncheckedUpdateWithoutTareasInput = {
   id_rol?: Prisma.IntFieldUpdateOperationsInput | number
   activo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   refresh_tokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUsuarioNestedInput
+  historial_proyectos?: Prisma.HistorialProyectoUncheckedUpdateManyWithoutUsuarioNestedInput
 }
 
 export type UsuarioCreateWithoutRefresh_tokensInput = {
@@ -630,6 +719,7 @@ export type UsuarioCreateWithoutRefresh_tokensInput = {
   contrasena: string
   activo?: boolean
   tareas?: Prisma.TareaCreateNestedManyWithoutUsuarioInput
+  historial_proyectos?: Prisma.HistorialProyectoCreateNestedManyWithoutUsuarioInput
   rol: Prisma.RolCreateNestedOneWithoutUsuariosInput
 }
 
@@ -642,6 +732,7 @@ export type UsuarioUncheckedCreateWithoutRefresh_tokensInput = {
   id_rol: number
   activo?: boolean
   tareas?: Prisma.TareaUncheckedCreateNestedManyWithoutUsuarioInput
+  historial_proyectos?: Prisma.HistorialProyectoUncheckedCreateNestedManyWithoutUsuarioInput
 }
 
 export type UsuarioCreateOrConnectWithoutRefresh_tokensInput = {
@@ -667,6 +758,7 @@ export type UsuarioUpdateWithoutRefresh_tokensInput = {
   contrasena?: Prisma.StringFieldUpdateOperationsInput | string
   activo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tareas?: Prisma.TareaUpdateManyWithoutUsuarioNestedInput
+  historial_proyectos?: Prisma.HistorialProyectoUpdateManyWithoutUsuarioNestedInput
   rol?: Prisma.RolUpdateOneRequiredWithoutUsuariosNestedInput
 }
 
@@ -679,6 +771,7 @@ export type UsuarioUncheckedUpdateWithoutRefresh_tokensInput = {
   id_rol?: Prisma.IntFieldUpdateOperationsInput | number
   activo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tareas?: Prisma.TareaUncheckedUpdateManyWithoutUsuarioNestedInput
+  historial_proyectos?: Prisma.HistorialProyectoUncheckedUpdateManyWithoutUsuarioNestedInput
 }
 
 export type UsuarioCreateManyRolInput = {
@@ -698,6 +791,7 @@ export type UsuarioUpdateWithoutRolInput = {
   activo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tareas?: Prisma.TareaUpdateManyWithoutUsuarioNestedInput
   refresh_tokens?: Prisma.RefreshTokenUpdateManyWithoutUsuarioNestedInput
+  historial_proyectos?: Prisma.HistorialProyectoUpdateManyWithoutUsuarioNestedInput
 }
 
 export type UsuarioUncheckedUpdateWithoutRolInput = {
@@ -709,6 +803,7 @@ export type UsuarioUncheckedUpdateWithoutRolInput = {
   activo?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tareas?: Prisma.TareaUncheckedUpdateManyWithoutUsuarioNestedInput
   refresh_tokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUsuarioNestedInput
+  historial_proyectos?: Prisma.HistorialProyectoUncheckedUpdateManyWithoutUsuarioNestedInput
 }
 
 export type UsuarioUncheckedUpdateManyWithoutRolInput = {
@@ -728,11 +823,13 @@ export type UsuarioUncheckedUpdateManyWithoutRolInput = {
 export type UsuarioCountOutputType = {
   tareas: number
   refresh_tokens: number
+  historial_proyectos: number
 }
 
 export type UsuarioCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tareas?: boolean | UsuarioCountOutputTypeCountTareasArgs
   refresh_tokens?: boolean | UsuarioCountOutputTypeCountRefresh_tokensArgs
+  historial_proyectos?: boolean | UsuarioCountOutputTypeCountHistorial_proyectosArgs
 }
 
 /**
@@ -759,6 +856,13 @@ export type UsuarioCountOutputTypeCountRefresh_tokensArgs<ExtArgs extends runtim
   where?: Prisma.RefreshTokenWhereInput
 }
 
+/**
+ * UsuarioCountOutputType without action
+ */
+export type UsuarioCountOutputTypeCountHistorial_proyectosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.HistorialProyectoWhereInput
+}
+
 
 export type UsuarioSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id_usuario?: boolean
@@ -770,6 +874,7 @@ export type UsuarioSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   activo?: boolean
   tareas?: boolean | Prisma.Usuario$tareasArgs<ExtArgs>
   refresh_tokens?: boolean | Prisma.Usuario$refresh_tokensArgs<ExtArgs>
+  historial_proyectos?: boolean | Prisma.Usuario$historial_proyectosArgs<ExtArgs>
   rol?: boolean | Prisma.RolDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.UsuarioCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["usuario"]>
@@ -810,6 +915,7 @@ export type UsuarioOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type UsuarioInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tareas?: boolean | Prisma.Usuario$tareasArgs<ExtArgs>
   refresh_tokens?: boolean | Prisma.Usuario$refresh_tokensArgs<ExtArgs>
+  historial_proyectos?: boolean | Prisma.Usuario$historial_proyectosArgs<ExtArgs>
   rol?: boolean | Prisma.RolDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.UsuarioCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -825,6 +931,7 @@ export type $UsuarioPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     tareas: Prisma.$TareaPayload<ExtArgs>[]
     refresh_tokens: Prisma.$RefreshTokenPayload<ExtArgs>[]
+    historial_proyectos: Prisma.$HistorialProyectoPayload<ExtArgs>[]
     rol: Prisma.$RolPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1231,6 +1338,7 @@ export interface Prisma__UsuarioClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   tareas<T extends Prisma.Usuario$tareasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Usuario$tareasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TareaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   refresh_tokens<T extends Prisma.Usuario$refresh_tokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Usuario$refresh_tokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RefreshTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  historial_proyectos<T extends Prisma.Usuario$historial_proyectosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Usuario$historial_proyectosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HistorialProyectoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   rol<T extends Prisma.RolDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RolDefaultArgs<ExtArgs>>): Prisma.Prisma__RolClient<runtime.Types.Result.GetResult<Prisma.$RolPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1714,6 +1822,30 @@ export type Usuario$refresh_tokensArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.RefreshTokenScalarFieldEnum | Prisma.RefreshTokenScalarFieldEnum[]
+}
+
+/**
+ * Usuario.historial_proyectos
+ */
+export type Usuario$historial_proyectosArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the HistorialProyecto
+   */
+  select?: Prisma.HistorialProyectoSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the HistorialProyecto
+   */
+  omit?: Prisma.HistorialProyectoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.HistorialProyectoInclude<ExtArgs> | null
+  where?: Prisma.HistorialProyectoWhereInput
+  orderBy?: Prisma.HistorialProyectoOrderByWithRelationInput | Prisma.HistorialProyectoOrderByWithRelationInput[]
+  cursor?: Prisma.HistorialProyectoWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.HistorialProyectoScalarFieldEnum | Prisma.HistorialProyectoScalarFieldEnum[]
 }
 
 /**

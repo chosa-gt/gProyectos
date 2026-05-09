@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Plus, Search } from "lucide-react";
+import { Building2, MoreHorizontal, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
 import { Input } from "../../components/ui/input";
@@ -24,6 +24,12 @@ import {
   getClientesApi, getEmpresasApi, getEstadosClienteApi,
   createClienteApi, updateClienteApi, deleteClienteApi,
 } from "../../api/clientes.api";
+import {
+  getEmpresasApi as getEmpresasConConteoApi,
+  createEmpresaApi, updateEmpresaApi, deleteEmpresaApi,
+  type EmpresaConConteo,
+} from "../../api/empresas.api";
+import { useAuthStore } from "../../store/auth.store";
 
 const estadoBadgeVariant = (estado: string) => {
   if (estado === "Activo")    return "default";
@@ -36,6 +42,9 @@ const emptyForm = {
 };
 
 export const ClientesPage = () => {
+  const { usuario: me } = useAuthStore();
+  const isAdmin = me?.id_rol === 1;
+
   const [clientes, setClientes]           = useState<Cliente[]>([]);
   const [empresas, setEmpresas]           = useState<Empresa[]>([]);
   const [estados, setEstados]             = useState<EstadoCliente[]>([]);
@@ -57,15 +66,31 @@ export const ClientesPage = () => {
   const [toDelete, setToDelete]           = useState<Cliente | null>(null);
   const [deleting, setDeleting]           = useState(false);
 
+  // — Empresas dialog —
+  const [empDialogOpen, setEmpDialogOpen]     = useState(false);
+  const [empList, setEmpList]                 = useState<EmpresaConConteo[]>([]);
+  const [empLoading, setEmpLoading]           = useState(false);
+  const [empForm, setEmpForm]                 = useState("");
+  const [empSelected, setEmpSelected]         = useState<EmpresaConConteo | null>(null);
+  const [empSaving, setEmpSaving]             = useState(false);
+  const [empConfirmOpen, setEmpConfirmOpen]   = useState(false);
+  const [empToDelete, setEmpToDelete]         = useState<EmpresaConConteo | null>(null);
+  const [empDeleting, setEmpDeleting]         = useState(false);
+
+  const loadCatalogs = async () => {
+    const [e, es] = await Promise.all([getEmpresasApi(), getEstadosClienteApi()]);
+    setEmpresas(e);
+    setEstados(es);
+  };
+
   const load = async (search: string, empresa: string, estado: string, p: number) => {
     try {
       setLoading(true);
       const res = await getClientesApi({
-        page: p,
-        limit: 10,
+        page: p, limit: 10,
         search: search || undefined,
-        id_empresa: empresa !== "all" ? Number(empresa) : undefined,
-        id_estado_cliente: estado !== "all" ? Number(estado) : undefined,
+        id_empresa:        empresa !== "all" ? Number(empresa) : undefined,
+        id_estado_cliente: estado  !== "all" ? Number(estado)  : undefined,
       });
       setClientes(res.data);
       setMeta(res.meta);
@@ -76,16 +101,12 @@ export const ClientesPage = () => {
     }
   };
 
-  // Load catalogs once
   useEffect(() => {
-    Promise.all([getEmpresasApi(), getEstadosClienteApi()])
-      .then(([e, es]) => { setEmpresas(e); setEstados(es); })
-      .catch(() => toast.error("No se pudieron cargar los catálogos"));
+    loadCatalogs().catch(() => toast.error("No se pudieron cargar los catálogos"));
   }, []);
 
   useEffect(() => { load("", "all", "all", 1); }, []);
 
-  // Debounce busqueda → page 1
   useEffect(() => {
     const timer = setTimeout(() => {
       setPage(1);
@@ -94,27 +115,19 @@ export const ClientesPage = () => {
     return () => clearTimeout(timer);
   }, [busqueda]);
 
-  const openCreate = () => {
-    setSelected(null);
-    setForm(emptyForm);
-    setModalOpen(true);
-  };
+  // — Clientes handlers —
+  const openCreate = () => { setSelected(null); setForm(emptyForm); setModalOpen(true); };
 
   const openEdit = (c: Cliente) => {
     setSelected(c);
     setForm({
       nombre:            c.nombre,
-      correo:            c.correo ?? "",
-      telefono:          c.telefono ?? "",
+      correo:            c.correo    ?? "",
+      telefono:          c.telefono  ?? "",
       id_empresa:        String(c.id_empresa),
       id_estado_cliente: String(c.id_estado_cliente),
     });
     setModalOpen(true);
-  };
-
-  const openConfirm = (c: Cliente) => {
-    setToDelete(c);
-    setConfirmOpen(true);
   };
 
   const handleSave = async () => {
@@ -122,7 +135,6 @@ export const ClientesPage = () => {
       toast.error("Nombre, empresa y estado son obligatorios");
       return;
     }
-
     const payload = {
       nombre:            form.nombre,
       correo:            form.correo   || undefined,
@@ -130,7 +142,6 @@ export const ClientesPage = () => {
       id_empresa:        Number(form.id_empresa),
       id_estado_cliente: Number(form.id_estado_cliente),
     };
-
     try {
       setSaving(true);
       if (selected) {
@@ -170,13 +181,74 @@ export const ClientesPage = () => {
       setForm((f) => ({ ...f, [key]: e.target.value })),
   });
 
+  // — Empresas handlers —
+  const openEmpDialog = async () => {
+    setEmpDialogOpen(true);
+    setEmpForm("");
+    setEmpSelected(null);
+    setEmpLoading(true);
+    try {
+      setEmpList(await getEmpresasConConteoApi());
+    } catch {
+      toast.error("No se pudieron cargar las empresas");
+    } finally {
+      setEmpLoading(false);
+    }
+  };
+
+  const handleEmpSave = async () => {
+    if (!empForm.trim()) { toast.error("El nombre es obligatorio"); return; }
+    try {
+      setEmpSaving(true);
+      if (empSelected) {
+        await updateEmpresaApi(empSelected.id_empresa, { nombre: empForm.trim() });
+        toast.success("Empresa actualizada");
+      } else {
+        await createEmpresaApi({ nombre: empForm.trim() });
+        toast.success("Empresa creada");
+      }
+      setEmpForm("");
+      setEmpSelected(null);
+      setEmpList(await getEmpresasConConteoApi());
+      loadCatalogs();
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Error al guardar");
+    } finally {
+      setEmpSaving(false);
+    }
+  };
+
+  const handleEmpDelete = async () => {
+    if (!empToDelete) return;
+    try {
+      setEmpDeleting(true);
+      await deleteEmpresaApi(empToDelete.id_empresa);
+      toast.success(`${empToDelete.nombre} eliminada`);
+      setEmpConfirmOpen(false);
+      setEmpToDelete(null);
+      setEmpList(await getEmpresasConConteoApi());
+      loadCatalogs();
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "No se pudo eliminar la empresa");
+    } finally {
+      setEmpDeleting(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Clientes</h1>
-        <Button onClick={openCreate}>
-          <Plus size={16} className="mr-2" /> Nuevo cliente
-        </Button>
+        <div className="flex gap-2">
+          {isAdmin && (
+            <Button variant="outline" onClick={openEmpDialog}>
+              <Building2 size={16} className="mr-2" /> Empresas
+            </Button>
+          )}
+          <Button onClick={openCreate}>
+            <Plus size={16} className="mr-2" /> Nuevo cliente
+          </Button>
+        </div>
       </div>
 
       {/* Filtros */}
@@ -294,7 +366,7 @@ export const ClientesPage = () => {
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             variant="destructive"
-                            onClick={() => openConfirm(c)}
+                            onClick={() => { setToDelete(c); setConfirmOpen(true); }}
                           >
                             Eliminar
                           </DropdownMenuItem>
@@ -313,7 +385,7 @@ export const ClientesPage = () => {
         )}
       </div>
 
-      {/* Modal crear / editar */}
+      {/* Modal crear / editar cliente */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -382,9 +454,7 @@ export const ClientesPage = () => {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setModalOpen(false)}>
-              Cancelar
-            </Button>
+            <Button variant="outline" onClick={() => setModalOpen(false)}>Cancelar</Button>
             <Button onClick={handleSave} disabled={saving}>
               {saving ? "Guardando..." : "Guardar"}
             </Button>
@@ -392,23 +462,118 @@ export const ClientesPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Diálogo confirmar eliminar */}
+      {/* Confirmar eliminar cliente */}
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <DialogContent className="sm:max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Eliminar cliente</DialogTitle>
-          </DialogHeader>
+          <DialogHeader><DialogTitle>Eliminar cliente</DialogTitle></DialogHeader>
           <p className="text-sm text-gray-600">
-            ¿Eliminar a{" "}
-            <span className="font-medium">{toDelete?.nombre}</span>
-            ? Esta acción no se puede deshacer.
+            ¿Eliminar a <span className="font-medium">{toDelete?.nombre}</span>? Esta acción no se puede deshacer.
           </p>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setConfirmOpen(false)}>
-              Cancelar
-            </Button>
+            <Button variant="outline" onClick={() => setConfirmOpen(false)}>Cancelar</Button>
             <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
               {deleting ? "Eliminando..." : "Eliminar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog administrar empresas */}
+      <Dialog open={empDialogOpen} onOpenChange={(open) => {
+        setEmpDialogOpen(open);
+        if (!open) { setEmpSelected(null); setEmpForm(""); }
+      }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Administrar empresas</DialogTitle>
+          </DialogHeader>
+
+          {/* Formulario nueva / editar empresa */}
+          <div className="flex gap-2">
+            <Input
+              placeholder="Nombre de la empresa"
+              value={empForm}
+              onChange={(e) => setEmpForm(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") handleEmpSave(); }}
+            />
+            <Button onClick={handleEmpSave} disabled={empSaving} className="shrink-0">
+              {empSelected ? <Pencil size={14} /> : <Plus size={14} />}
+              <span className="ml-1">{empSelected ? "Actualizar" : "Agregar"}</span>
+            </Button>
+            {empSelected && (
+              <Button
+                variant="outline"
+                className="shrink-0"
+                onClick={() => { setEmpSelected(null); setEmpForm(""); }}
+              >
+                Cancelar
+              </Button>
+            )}
+          </div>
+
+          {/* Lista de empresas */}
+          <div className="mt-2 max-h-72 overflow-y-auto divide-y rounded-lg border">
+            {empLoading
+              ? Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="flex items-center justify-between px-3 py-2.5">
+                    <Skeleton className="h-4 w-40" />
+                    <Skeleton className="h-4 w-16" />
+                  </div>
+                ))
+              : empList.length === 0
+              ? (
+                  <p className="py-6 text-center text-sm text-gray-400">
+                    No hay empresas registradas
+                  </p>
+                )
+              : empList.map((e) => (
+                  <div key={e.id_empresa} className="flex items-center justify-between px-3 py-2.5">
+                    <div>
+                      <p className="text-sm font-medium">{e.nombre}</p>
+                      <p className="text-xs text-gray-400">
+                        {e._count.clientes} {e._count.clientes === 1 ? "cliente" : "clientes"}
+                      </p>
+                    </div>
+                    <div className="flex gap-1">
+                      <button
+                        className="inline-flex h-7 w-7 items-center justify-center rounded hover:bg-accent transition-colors text-gray-500"
+                        onClick={() => { setEmpSelected(e); setEmpForm(e.nombre ?? ""); }}
+                      >
+                        <Pencil size={13} />
+                      </button>
+                      <button
+                        className="inline-flex h-7 w-7 items-center justify-center rounded hover:bg-destructive/10 transition-colors text-destructive"
+                        onClick={() => { setEmpToDelete(e); setEmpConfirmOpen(true); }}
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirmar eliminar empresa */}
+      <Dialog open={empConfirmOpen} onOpenChange={setEmpConfirmOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader><DialogTitle>Eliminar empresa</DialogTitle></DialogHeader>
+          <p className="text-sm text-gray-600">
+            ¿Eliminar <span className="font-medium">{empToDelete?.nombre}</span>?
+            {empToDelete && empToDelete._count.clientes > 0 && (
+              <span className="block mt-1 text-amber-600 font-medium">
+                Tiene {empToDelete._count.clientes} cliente(s) asociado(s) y no podrá eliminarse.
+              </span>
+            )}
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEmpConfirmOpen(false)}>Cancelar</Button>
+            <Button
+              variant="destructive"
+              onClick={handleEmpDelete}
+              disabled={empDeleting || (empToDelete?._count.clientes ?? 0) > 0}
+            >
+              {empDeleting ? "Eliminando..." : "Eliminar"}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -53,6 +53,11 @@ export type EstadoProyecto = Prisma.EstadoProyectoModel
  */
 export type Proyecto = Prisma.ProyectoModel
 /**
+ * Model HistorialProyecto
+ * 
+ */
+export type HistorialProyecto = Prisma.HistorialProyectoModel
+/**
  * Model Prioridad
  * 
  */

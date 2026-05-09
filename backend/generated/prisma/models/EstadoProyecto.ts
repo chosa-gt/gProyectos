@@ -193,12 +193,14 @@ export type EstadoProyectoWhereInput = {
   id_estado_proyecto?: Prisma.IntFilter<"EstadoProyecto"> | number
   estado?: Prisma.StringNullableFilter<"EstadoProyecto"> | string | null
   proyectos?: Prisma.ProyectoListRelationFilter
+  historial?: Prisma.HistorialProyectoListRelationFilter
 }
 
 export type EstadoProyectoOrderByWithRelationInput = {
   id_estado_proyecto?: Prisma.SortOrder
   estado?: Prisma.SortOrderInput | Prisma.SortOrder
   proyectos?: Prisma.ProyectoOrderByRelationAggregateInput
+  historial?: Prisma.HistorialProyectoOrderByRelationAggregateInput
 }
 
 export type EstadoProyectoWhereUniqueInput = Prisma.AtLeast<{
@@ -208,6 +210,7 @@ export type EstadoProyectoWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.EstadoProyectoWhereInput | Prisma.EstadoProyectoWhereInput[]
   estado?: Prisma.StringNullableFilter<"EstadoProyecto"> | string | null
   proyectos?: Prisma.ProyectoListRelationFilter
+  historial?: Prisma.HistorialProyectoListRelationFilter
 }, "id_estado_proyecto">
 
 export type EstadoProyectoOrderByWithAggregationInput = {
@@ -231,23 +234,27 @@ export type EstadoProyectoScalarWhereWithAggregatesInput = {
 export type EstadoProyectoCreateInput = {
   estado?: string | null
   proyectos?: Prisma.ProyectoCreateNestedManyWithoutEstado_proyectoInput
+  historial?: Prisma.HistorialProyectoCreateNestedManyWithoutEstado_proyectoInput
 }
 
 export type EstadoProyectoUncheckedCreateInput = {
   id_estado_proyecto?: number
   estado?: string | null
   proyectos?: Prisma.ProyectoUncheckedCreateNestedManyWithoutEstado_proyectoInput
+  historial?: Prisma.HistorialProyectoUncheckedCreateNestedManyWithoutEstado_proyectoInput
 }
 
 export type EstadoProyectoUpdateInput = {
   estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proyectos?: Prisma.ProyectoUpdateManyWithoutEstado_proyectoNestedInput
+  historial?: Prisma.HistorialProyectoUpdateManyWithoutEstado_proyectoNestedInput
 }
 
 export type EstadoProyectoUncheckedUpdateInput = {
   id_estado_proyecto?: Prisma.IntFieldUpdateOperationsInput | number
   estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proyectos?: Prisma.ProyectoUncheckedUpdateManyWithoutEstado_proyectoNestedInput
+  historial?: Prisma.HistorialProyectoUncheckedUpdateManyWithoutEstado_proyectoNestedInput
 }
 
 export type EstadoProyectoCreateManyInput = {
@@ -306,13 +313,29 @@ export type EstadoProyectoUpdateOneRequiredWithoutProyectosNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.EstadoProyectoUpdateToOneWithWhereWithoutProyectosInput, Prisma.EstadoProyectoUpdateWithoutProyectosInput>, Prisma.EstadoProyectoUncheckedUpdateWithoutProyectosInput>
 }
 
+export type EstadoProyectoCreateNestedOneWithoutHistorialInput = {
+  create?: Prisma.XOR<Prisma.EstadoProyectoCreateWithoutHistorialInput, Prisma.EstadoProyectoUncheckedCreateWithoutHistorialInput>
+  connectOrCreate?: Prisma.EstadoProyectoCreateOrConnectWithoutHistorialInput
+  connect?: Prisma.EstadoProyectoWhereUniqueInput
+}
+
+export type EstadoProyectoUpdateOneRequiredWithoutHistorialNestedInput = {
+  create?: Prisma.XOR<Prisma.EstadoProyectoCreateWithoutHistorialInput, Prisma.EstadoProyectoUncheckedCreateWithoutHistorialInput>
+  connectOrCreate?: Prisma.EstadoProyectoCreateOrConnectWithoutHistorialInput
+  upsert?: Prisma.EstadoProyectoUpsertWithoutHistorialInput
+  connect?: Prisma.EstadoProyectoWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EstadoProyectoUpdateToOneWithWhereWithoutHistorialInput, Prisma.EstadoProyectoUpdateWithoutHistorialInput>, Prisma.EstadoProyectoUncheckedUpdateWithoutHistorialInput>
+}
+
 export type EstadoProyectoCreateWithoutProyectosInput = {
   estado?: string | null
+  historial?: Prisma.HistorialProyectoCreateNestedManyWithoutEstado_proyectoInput
 }
 
 export type EstadoProyectoUncheckedCreateWithoutProyectosInput = {
   id_estado_proyecto?: number
   estado?: string | null
+  historial?: Prisma.HistorialProyectoUncheckedCreateNestedManyWithoutEstado_proyectoInput
 }
 
 export type EstadoProyectoCreateOrConnectWithoutProyectosInput = {
@@ -333,11 +356,51 @@ export type EstadoProyectoUpdateToOneWithWhereWithoutProyectosInput = {
 
 export type EstadoProyectoUpdateWithoutProyectosInput = {
   estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  historial?: Prisma.HistorialProyectoUpdateManyWithoutEstado_proyectoNestedInput
 }
 
 export type EstadoProyectoUncheckedUpdateWithoutProyectosInput = {
   id_estado_proyecto?: Prisma.IntFieldUpdateOperationsInput | number
   estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  historial?: Prisma.HistorialProyectoUncheckedUpdateManyWithoutEstado_proyectoNestedInput
+}
+
+export type EstadoProyectoCreateWithoutHistorialInput = {
+  estado?: string | null
+  proyectos?: Prisma.ProyectoCreateNestedManyWithoutEstado_proyectoInput
+}
+
+export type EstadoProyectoUncheckedCreateWithoutHistorialInput = {
+  id_estado_proyecto?: number
+  estado?: string | null
+  proyectos?: Prisma.ProyectoUncheckedCreateNestedManyWithoutEstado_proyectoInput
+}
+
+export type EstadoProyectoCreateOrConnectWithoutHistorialInput = {
+  where: Prisma.EstadoProyectoWhereUniqueInput
+  create: Prisma.XOR<Prisma.EstadoProyectoCreateWithoutHistorialInput, Prisma.EstadoProyectoUncheckedCreateWithoutHistorialInput>
+}
+
+export type EstadoProyectoUpsertWithoutHistorialInput = {
+  update: Prisma.XOR<Prisma.EstadoProyectoUpdateWithoutHistorialInput, Prisma.EstadoProyectoUncheckedUpdateWithoutHistorialInput>
+  create: Prisma.XOR<Prisma.EstadoProyectoCreateWithoutHistorialInput, Prisma.EstadoProyectoUncheckedCreateWithoutHistorialInput>
+  where?: Prisma.EstadoProyectoWhereInput
+}
+
+export type EstadoProyectoUpdateToOneWithWhereWithoutHistorialInput = {
+  where?: Prisma.EstadoProyectoWhereInput
+  data: Prisma.XOR<Prisma.EstadoProyectoUpdateWithoutHistorialInput, Prisma.EstadoProyectoUncheckedUpdateWithoutHistorialInput>
+}
+
+export type EstadoProyectoUpdateWithoutHistorialInput = {
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  proyectos?: Prisma.ProyectoUpdateManyWithoutEstado_proyectoNestedInput
+}
+
+export type EstadoProyectoUncheckedUpdateWithoutHistorialInput = {
+  id_estado_proyecto?: Prisma.IntFieldUpdateOperationsInput | number
+  estado?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  proyectos?: Prisma.ProyectoUncheckedUpdateManyWithoutEstado_proyectoNestedInput
 }
 
 
@@ -347,10 +410,12 @@ export type EstadoProyectoUncheckedUpdateWithoutProyectosInput = {
 
 export type EstadoProyectoCountOutputType = {
   proyectos: number
+  historial: number
 }
 
 export type EstadoProyectoCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   proyectos?: boolean | EstadoProyectoCountOutputTypeCountProyectosArgs
+  historial?: boolean | EstadoProyectoCountOutputTypeCountHistorialArgs
 }
 
 /**
@@ -370,11 +435,19 @@ export type EstadoProyectoCountOutputTypeCountProyectosArgs<ExtArgs extends runt
   where?: Prisma.ProyectoWhereInput
 }
 
+/**
+ * EstadoProyectoCountOutputType without action
+ */
+export type EstadoProyectoCountOutputTypeCountHistorialArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.HistorialProyectoWhereInput
+}
+
 
 export type EstadoProyectoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id_estado_proyecto?: boolean
   estado?: boolean
   proyectos?: boolean | Prisma.EstadoProyecto$proyectosArgs<ExtArgs>
+  historial?: boolean | Prisma.EstadoProyecto$historialArgs<ExtArgs>
   _count?: boolean | Prisma.EstadoProyectoCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["estadoProyecto"]>
 
@@ -396,6 +469,7 @@ export type EstadoProyectoSelectScalar = {
 export type EstadoProyectoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id_estado_proyecto" | "estado", ExtArgs["result"]["estadoProyecto"]>
 export type EstadoProyectoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   proyectos?: boolean | Prisma.EstadoProyecto$proyectosArgs<ExtArgs>
+  historial?: boolean | Prisma.EstadoProyecto$historialArgs<ExtArgs>
   _count?: boolean | Prisma.EstadoProyectoCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type EstadoProyectoIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -405,6 +479,7 @@ export type $EstadoProyectoPayload<ExtArgs extends runtime.Types.Extensions.Inte
   name: "EstadoProyecto"
   objects: {
     proyectos: Prisma.$ProyectoPayload<ExtArgs>[]
+    historial: Prisma.$HistorialProyectoPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id_estado_proyecto: number
@@ -804,6 +879,7 @@ readonly fields: EstadoProyectoFieldRefs;
 export interface Prisma__EstadoProyectoClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   proyectos<T extends Prisma.EstadoProyecto$proyectosArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EstadoProyecto$proyectosArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProyectoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  historial<T extends Prisma.EstadoProyecto$historialArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EstadoProyecto$historialArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HistorialProyectoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1249,6 +1325,30 @@ export type EstadoProyecto$proyectosArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.ProyectoScalarFieldEnum | Prisma.ProyectoScalarFieldEnum[]
+}
+
+/**
+ * EstadoProyecto.historial
+ */
+export type EstadoProyecto$historialArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the HistorialProyecto
+   */
+  select?: Prisma.HistorialProyectoSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the HistorialProyecto
+   */
+  omit?: Prisma.HistorialProyectoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.HistorialProyectoInclude<ExtArgs> | null
+  where?: Prisma.HistorialProyectoWhereInput
+  orderBy?: Prisma.HistorialProyectoOrderByWithRelationInput | Prisma.HistorialProyectoOrderByWithRelationInput[]
+  cursor?: Prisma.HistorialProyectoWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.HistorialProyectoScalarFieldEnum | Prisma.HistorialProyectoScalarFieldEnum[]
 }
 
 /**

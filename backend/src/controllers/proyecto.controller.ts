@@ -35,8 +35,21 @@ export const create = async (req: Request, res: Response, next: NextFunction) =>
 
 export const update = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const proyecto = await proyectoService.update(Number(req.params.id), req.body);
+    const proyecto = await proyectoService.update(
+      Number(req.params.id),
+      req.usuario.id_usuario,
+      req.body,
+    );
     res.status(200).json({ status: "ok", data: proyecto });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getHistorial = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const historial = await proyectoService.getHistorial(Number(req.params.id));
+    res.status(200).json({ status: "ok", data: historial });
   } catch (err) {
     next(err);
   }

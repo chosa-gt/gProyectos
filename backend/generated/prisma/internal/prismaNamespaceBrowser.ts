@@ -58,6 +58,7 @@ export const ModelName = {
   Cliente: 'Cliente',
   EstadoProyecto: 'EstadoProyecto',
   Proyecto: 'Proyecto',
+  HistorialProyecto: 'HistorialProyecto',
   Prioridad: 'Prioridad',
   EstadoTarea: 'EstadoTarea',
   Tarea: 'Tarea',
@@ -148,6 +149,18 @@ export const ProyectoScalarFieldEnum = {
 } as const
 
 export type ProyectoScalarFieldEnum = (typeof ProyectoScalarFieldEnum)[keyof typeof ProyectoScalarFieldEnum]
+
+
+export const HistorialProyectoScalarFieldEnum = {
+  id_historial: 'id_historial',
+  id_proyecto: 'id_proyecto',
+  id_estado_proyecto: 'id_estado_proyecto',
+  id_usuario: 'id_usuario',
+  detalle: 'detalle',
+  fecha_cambio: 'fecha_cambio'
+} as const
+
+export type HistorialProyectoScalarFieldEnum = (typeof HistorialProyectoScalarFieldEnum)[keyof typeof HistorialProyectoScalarFieldEnum]
 
 
 export const PrioridadScalarFieldEnum = {

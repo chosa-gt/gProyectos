@@ -77,6 +77,17 @@ export interface Tarea {
   proyecto: { nombre: string };
 }
 
+export interface HistorialProyecto {
+  id_historial:    number;
+  id_proyecto:     number;
+  id_estado_proyecto: number;
+  id_usuario:      number;
+  detalle:         string | null;
+  fecha_cambio:    string;
+  estado_proyecto: { estado: string };
+  usuario:         { nombre: string; apellido: string };
+}
+
 export interface PaginationMeta {
   total:      number;
   page:       number;

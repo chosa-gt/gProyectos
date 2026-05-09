@@ -14,4 +14,6 @@ export const createProyectoSchema = z.object({
   id_estado_proyecto: z.number().int().positive("Estado inválido"),
 });
 
-export const updateProyectoSchema = createProyectoSchema.partial();
+export const updateProyectoSchema = createProyectoSchema.partial().extend({
+  detalle: z.string().max(500).optional(),
+});

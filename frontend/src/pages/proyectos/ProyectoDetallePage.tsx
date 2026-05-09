@@ -16,8 +16,11 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "../../components/ui/select";
-import type { Proyecto, Cliente, EstadoProyecto } from "../../types";
-import { getProyectoByIdApi, getEstadosProyectoApi, updateProyectoApi } from "../../api/proyectos.api";
+import type { Proyecto, Cliente, EstadoProyecto, HistorialProyecto } from "../../types";
+import {
+  getProyectoByIdApi, getEstadosProyectoApi,
+  updateProyectoApi, getProyectoHistorialApi,
+} from "../../api/proyectos.api";
 import { getClientesApi } from "../../api/clientes.api";
 
 const estadoClases: Record<string, string> = {
@@ -25,13 +28,20 @@ const estadoClases: Record<string, string> = {
   "En progreso":   "border-yellow-300 bg-yellow-50 text-yellow-700",
   "Finalizado":    "border-green-300 bg-green-50 text-green-700",
   "Cancelado":     "border-gray-300 bg-gray-100 text-gray-500",
+  "Pausado":       "border-purple-300 bg-purple-50 text-purple-700",
 };
 
 const prioridadColor: Record<string, string> = {
-  Alta:   "text-red-600",
-  Media:  "text-yellow-600",
-  Baja:   "text-gray-500",
+  Alta:  "text-red-600",
+  Media: "text-yellow-600",
+  Baja:  "text-gray-500",
 };
+
+const fmtFecha = (iso: string) =>
+  new Date(iso).toLocaleDateString("es-SV", { day: "2-digit", month: "short", year: "numeric" });
+
+const fmtHora = (iso: string) =>
+  new Date(iso).toLocaleTimeString("es-SV", { hour: "2-digit", minute: "2-digit" });
 
 export const ProyectoDetallePage = () => {
   const { id } = useParams<{ id: string }>();
@@ -40,26 +50,34 @@ export const ProyectoDetallePage = () => {
   const [proyecto, setProyecto]   = useState<Proyecto | null>(null);
   const [clientes, setClientes]   = useState<Cliente[]>([]);
   const [estados, setEstados]     = useState<EstadoProyecto[]>([]);
+  const [historial, setHistorial] = useState<HistorialProyecto[]>([]);
   const [loading, setLoading]     = useState(true);
   const [saving, setSaving]       = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
 
   const [form, setForm] = useState({
     nombre: "", descripcion: "", fecha_inicio: "", fecha_fin: "",
-    id_cliente: "", id_estado_proyecto: "",
+    id_cliente: "", id_estado_proyecto: "", detalle: "",
   });
+
+  // Estado original al abrir modal (para detectar cambio)
+  const [estadoOriginal, setEstadoOriginal] = useState("");
+
+  const estadoCambio = form.id_estado_proyecto !== estadoOriginal && estadoOriginal !== "";
 
   const load = async () => {
     try {
       setLoading(true);
-      const [p, c, e] = await Promise.all([
+      const [p, c, e, h] = await Promise.all([
         getProyectoByIdApi(Number(id)),
         getClientesApi(),
         getEstadosProyectoApi(),
+        getProyectoHistorialApi(Number(id)),
       ]);
       setProyecto(p);
       setClientes(c.data);
       setEstados(e);
+      setHistorial(h);
     } catch {
       toast.error("No se pudo cargar el proyecto");
       navigate("/proyectos");
@@ -72,13 +90,16 @@ export const ProyectoDetallePage = () => {
 
   const openEdit = () => {
     if (!proyecto) return;
+    const estadoStr = String(proyecto.id_estado_proyecto);
+    setEstadoOriginal(estadoStr);
     setForm({
       nombre:             proyecto.nombre,
       descripcion:        proyecto.descripcion ?? "",
       fecha_inicio:       proyecto.fecha_inicio.slice(0, 10),
       fecha_fin:          proyecto.fecha_fin ? proyecto.fecha_fin.slice(0, 10) : "",
       id_cliente:         String(proyecto.id_cliente),
-      id_estado_proyecto: String(proyecto.id_estado_proyecto),
+      id_estado_proyecto: estadoStr,
+      detalle:            "",
     });
     setModalOpen(true);
   };
@@ -86,6 +107,10 @@ export const ProyectoDetallePage = () => {
   const handleSave = async () => {
     if (!form.nombre || !form.fecha_inicio || !form.id_cliente || !form.id_estado_proyecto) {
       toast.error("Nombre, fecha de inicio, cliente y estado son obligatorios");
+      return;
+    }
+    if (estadoCambio && !form.detalle.trim()) {
+      toast.error("El detalle es obligatorio al cambiar el estado");
       return;
     }
     try {
@@ -97,6 +122,7 @@ export const ProyectoDetallePage = () => {
         fecha_fin:          form.fecha_fin || undefined,
         id_cliente:         Number(form.id_cliente),
         id_estado_proyecto: Number(form.id_estado_proyecto),
+        detalle:            estadoCambio ? form.detalle.trim() : undefined,
       });
       toast.success("Proyecto actualizado");
       setModalOpen(false);
@@ -163,16 +189,12 @@ export const ProyectoDetallePage = () => {
           </div>
           <div>
             <span className="text-gray-500">Fecha inicio</span>
-            <p className="font-medium">
-              {new Date(proyecto.fecha_inicio).toLocaleDateString("es-SV")}
-            </p>
+            <p className="font-medium">{new Date(proyecto.fecha_inicio).toLocaleDateString("es-SV")}</p>
           </div>
           {proyecto.fecha_fin && (
             <div>
               <span className="text-gray-500">Fecha fin</span>
-              <p className="font-medium">
-                {new Date(proyecto.fecha_fin).toLocaleDateString("es-SV")}
-              </p>
+              <p className="font-medium">{new Date(proyecto.fecha_fin).toLocaleDateString("es-SV")}</p>
             </div>
           )}
         </div>
@@ -223,6 +245,47 @@ export const ProyectoDetallePage = () => {
             </TableBody>
           </Table>
         </div>
+      </div>
+
+      {/* Historial de estados */}
+      <div>
+        <h2 className="text-lg font-semibold text-gray-800 mb-3">Historial de estados</h2>
+        {historial.length === 0 ? (
+          <div className="bg-white rounded-lg border p-6 text-center text-sm text-gray-400">
+            Aún no hay cambios de estado registrados
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg border p-6">
+            <ol className="relative border-l border-gray-200 space-y-6 ml-3">
+              {historial.map((h) => (
+                <li key={h.id_historial} className="ml-6">
+                  {/* Punto en la línea */}
+                  <span className="absolute -left-1.5 mt-1.5 h-3 w-3 rounded-full border-2 border-white bg-gray-300" />
+
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
+                    <Badge
+                      variant="outline"
+                      className={estadoClases[h.estado_proyecto.estado] ?? ""}
+                    >
+                      {h.estado_proyecto.estado}
+                    </Badge>
+                    <span className="text-xs text-gray-400">
+                      {fmtFecha(h.fecha_cambio)} · {fmtHora(h.fecha_cambio)}
+                    </span>
+                  </div>
+
+                  <p className="text-sm font-medium text-gray-700">
+                    {h.usuario.nombre} {h.usuario.apellido}
+                  </p>
+
+                  {h.detalle && (
+                    <p className="text-sm text-gray-500 mt-0.5 italic">"{h.detalle}"</p>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
       </div>
 
       {/* Modal editar */}
@@ -301,6 +364,24 @@ export const ProyectoDetallePage = () => {
                 <Input type="date" {...field("fecha_fin")} />
               </div>
             </div>
+
+            {/* Campo detalle — solo aparece cuando el estado cambia */}
+            {estadoCambio && (
+              <div className="space-y-2">
+                <Label>
+                  Detalle del cambio de estado *
+                  <span className="ml-1 text-xs font-normal text-gray-400">
+                    (¿por qué cambia a "{estados.find((e) => String(e.id_estado_proyecto) === form.id_estado_proyecto)?.estado}"?)
+                  </span>
+                </Label>
+                <textarea
+                  className="w-full rounded-lg border border-input bg-transparent px-2.5 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 resize-none"
+                  rows={2}
+                  placeholder="Describe el motivo del cambio..."
+                  {...field("detalle")}
+                />
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setModalOpen(false)}>
