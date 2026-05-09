@@ -18,3 +18,12 @@ export const getMisTareas = async (req: Request, res: Response, next: NextFuncti
     next(err);
   }
 };
+
+export const getCharts = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = await dashboardService.getCharts(req.usuario.id_usuario);
+    res.json({ status: "ok", data });
+  } catch (err) {
+    next(err);
+  }
+};
