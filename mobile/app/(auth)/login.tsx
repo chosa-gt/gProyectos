@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
+import { router } from "expo-router";
 import { login } from "@/src/api/auth";
 import { useAuthStore } from "@/src/store/auth.store";
 
@@ -88,6 +89,13 @@ export default function LoginScreen() {
                 Iniciar sesión
               </Text>
             )}
+          </TouchableOpacity>
+        </View>
+
+        <View className="flex-row justify-center mt-6 gap-1">
+          <Text className="text-gray-500">¿No tienes cuenta?</Text>
+          <TouchableOpacity onPress={() => router.push("/(auth)/register")}>
+            <Text className="text-blue-600 font-semibold">Regístrate</Text>
           </TouchableOpacity>
         </View>
       </View>
