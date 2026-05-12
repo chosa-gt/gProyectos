@@ -3,10 +3,11 @@ import * as tareaService from "../services/tarea.service.js";
 
 export const getAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { page = 1, limit = 10, search, id_proyecto, id_prioridad, id_estado_tarea } = req.query;
+    const { page = 1, limit = 10, search, id_proyecto, id_usuario, id_prioridad, id_estado_tarea } = req.query;
     const result = await tareaService.getAll(Number(page), Number(limit), {
       search:          search          as string | undefined,
       id_proyecto:     id_proyecto     ? Number(id_proyecto)     : undefined,
+      id_usuario:      id_usuario      ? Number(id_usuario)      : undefined,
       id_prioridad:    id_prioridad    ? Number(id_prioridad)    : undefined,
       id_estado_tarea: id_estado_tarea ? Number(id_estado_tarea) : undefined,
     });

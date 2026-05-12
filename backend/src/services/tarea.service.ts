@@ -4,10 +4,11 @@ import { buildMeta } from "../lib/paginate.js";
 
 export const getAll = async (
   page: number, limit: number,
-  filters: { search?: string; id_proyecto?: number; id_prioridad?: number; id_estado_tarea?: number }
+  filters: { search?: string; id_proyecto?: number; id_usuario?: number; id_prioridad?: number; id_estado_tarea?: number }
 ) => {
   const where = {
     ...(filters.id_proyecto     ? { id_proyecto: filters.id_proyecto }         : {}),
+    ...(filters.id_usuario      ? { id_usuario: filters.id_usuario }           : {}),
     ...(filters.id_prioridad    ? { id_prioridad: filters.id_prioridad }       : {}),
     ...(filters.id_estado_tarea ? { id_estado_tarea: filters.id_estado_tarea } : {}),
     ...(filters.search          ? { tarea: { contains: filters.search, mode: "insensitive" as const } } : {}),
