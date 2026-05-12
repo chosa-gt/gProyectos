@@ -1,6 +1,6 @@
 import api from "./axios";
 
-export const getTareas = (page = 1, search = "", filters: { id_usuario?: number; id_proyecto?: number } = {}) =>
+export const getTareas = (page = 1, search = "", filters: { id_usuario?: number; id_proyecto?: number; limit?: number } = {}) =>
   api.get("/tareas", { params: { page, search, ...filters } });
 
 export const getTarea = (id: number) => api.get(`/tareas/${id}`);

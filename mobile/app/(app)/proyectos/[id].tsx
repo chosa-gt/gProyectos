@@ -12,6 +12,7 @@ import {
 import { useLocalSearchParams, router } from "expo-router";
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
+import * as FileSystem from "expo-file-system/legacy";
 import {
   getProyecto,
   getEstadosProyecto,
@@ -149,8 +150,16 @@ export default function ProyectoDetalleScreen() {
   <div class="footer">Reporte generado el ${fecha} · SGP</div>
 </body></html>`;
 
-      const { uri } = await Print.printToFileAsync({ html, base64: false });
-      await Sharing.shareAsync(uri, { mimeType: "application/pdf", dialogTitle: `Reporte - ${proyecto.nombre}` });
+      const slug = (proyecto.nombre ?? "proyecto")
+        .toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
+        .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 20);
+      const mes = new Date().toISOString().slice(0, 7);
+      const filename = `sgp_proyecto_${slug}_${mes}.pdf`;
+
+      const { uri: tempUri } = await Print.printToFileAsync({ html, base64: false });
+      const finalUri = FileSystem.cacheDirectory + filename;
+      await FileSystem.copyAsync({ from: tempUri, to: finalUri });
+      await Sharing.shareAsync(finalUri, { mimeType: "application/pdf", dialogTitle: filename });
     } catch {
       Alert.alert("Error", "No se pudo generar el PDF.");
     } finally {
