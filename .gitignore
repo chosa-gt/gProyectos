@@ -63,3 +63,10 @@ Thumbs.db
 # ========================
 PROYECTO_CONTEXTO.md
 CLAUDE.md
+
+# ========================
+# EXPO / REACT NATIVE
+# ========================
+mobile/.expo/
+mobile/android/
+mobile/ios/
